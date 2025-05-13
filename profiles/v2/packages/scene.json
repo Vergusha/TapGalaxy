@@ -131,12 +131,38 @@
         "height": 746
       },
       "scale": 0.26931762974826184
+    },
+    "ad34d3fe-2b6b-4ecc-b088-5774285ecc5f": {
+      "position": {
+        "x": 539.9999999999998,
+        "y": 959.9999999999998,
+        "z": 5000
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "viewCenter": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "contentRect": {
+        "x": 0,
+        "y": 0,
+        "width": 293.7375,
+        "height": 522.2
+      },
+      "scale": 0.2719791666666667
     }
   },
   "camera-uuids": [
     "c7d333f4-fdb7-4bbd-b40d-bedb473cb6b9",
     "02dad0bb-48df-41af-90f1-a95f177f6f20",
-    "54eb1098-e785-4d6e-81d8-d5c17fb25ee3"
+    "54eb1098-e785-4d6e-81d8-d5c17fb25ee3",
+    "ad34d3fe-2b6b-4ecc-b088-5774285ecc5f"
   ],
   "camera": {
     "color": [
