@@ -11,4 +11,5 @@ Thumbs.db
 
 # VSCode и IDE
 .vscode/
-.idea/
+.idea/|
+.creator
