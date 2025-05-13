@@ -1,28 +1,14 @@
-# Cocos Creator 3.x
+# Кэш и временные файлы
 local/
 library/
 temp/
 build/
+
+# Логи и системные файлы
 *.log
-*.tmp
 .DS_Store
 Thumbs.db
 
-# VS Code settings
+# VSCode и IDE
 .vscode/
-
-# Mac/Windows system files
-ehthumbs.db
-Icon?
-Desktop.ini
-
-# Node.js (если ты что-то такое добавлял)
-node_modules/
-
-# Ненужные папки/файлы от системы
 .idea/
-*.swp
-*.swo
-
-# Unity-style мета-файлы, если ты их не хочешь
-*.meta
