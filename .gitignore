@@ -3,6 +3,8 @@ local/
 library/
 temp/
 build/
+profiles/v2
+settings/v2/packages
 
 # Логи и системные файлы
 *.log
@@ -12,4 +14,4 @@ Thumbs.db
 # VSCode и IDE
 .vscode/
 .idea/|
-.creator
+.creator/
