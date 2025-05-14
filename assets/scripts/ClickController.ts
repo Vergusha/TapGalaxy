@@ -21,9 +21,15 @@ export class ClickController extends Component {
 
     private oreCount: number = 0;
     private orePerClick: number = 1;
+    private originalPlanetPosition: Vec3 = null!; // Сохраняем начальную позицию
 
     start() {
         this.node.on(Node.EventType.TOUCH_START, this.handleClick, this);
+        
+        // Сохраняем исходную позицию планеты при старте
+        if (this.planetNode) {
+            this.originalPlanetPosition = this.planetNode.position.clone();
+        }
     }
 
     handleClick() {
@@ -69,16 +75,13 @@ export class ClickController extends Component {
     }
 
     shakePlanet() {
-        if (!this.planetNode) return;
-
-        // Store the original position (we'll need to clone it to avoid reference issues)
-        const originalPos = this.planetNode.position.clone();
+        if (!this.planetNode || !this.originalPlanetPosition) return;
         
-        // Create a series of tweens that modify a copy of the position
+        // Используем сохраненную оригинальную позицию вместо текущей
         tween(this.planetNode)
-            .to(0.05, { position: new Vec3(originalPos.x + 5, originalPos.y, originalPos.z) })
-            .to(0.05, { position: new Vec3(originalPos.x - 5, originalPos.y, originalPos.z) })
-            .to(0.05, { position: new Vec3(originalPos.x, originalPos.y, originalPos.z) })
+            .to(0.03, { position: new Vec3(this.originalPlanetPosition.x + 5, this.originalPlanetPosition.y, this.originalPlanetPosition.z) })
+            .to(0.06, { position: new Vec3(this.originalPlanetPosition.x - 5, this.originalPlanetPosition.y, this.originalPlanetPosition.z) })
+            .to(0.03, { position: new Vec3(this.originalPlanetPosition.x, this.originalPlanetPosition.y, this.originalPlanetPosition.z) })
             .start();
     }
 
