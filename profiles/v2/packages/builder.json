@@ -4,6 +4,155 @@
     "level": 4
   },
   "BuildTaskManager": {
-    "taskMap": {}
+    "taskMap": {
+      "1747220708600": {
+        "type": "build",
+        "id": "1747220708600",
+        "progress": 1,
+        "state": "success",
+        "stage": "build",
+        "message": "14.05.2025 13:08:12 build -> run success in 28 s!",
+        "detailMessage": "// ---- build task Add md5 suffix to assets ----\r",
+        "options": {
+          "name": "TapGalaxy",
+          "server": "",
+          "engineModulesConfigKey": "defaultConfig",
+          "platform": "web-mobile",
+          "buildPath": "project://build",
+          "debug": false,
+          "buildMode": "normal",
+          "mangleProperties": false,
+          "md5Cache": false,
+          "skipCompressTexture": false,
+          "sourceMaps": false,
+          "overwriteProjectSettings": {
+            "includeModules": {
+              "gfx-webgl2": "on",
+              "physics": "inherit-project-setting",
+              "physics-2d": "inherit-project-setting"
+            },
+            "macroConfig": {
+              "cleanupImageCache": "inherit-project-setting"
+            }
+          },
+          "nativeCodeBundleMode": "both",
+          "polyfills": {
+            "asyncFunctions": true
+          },
+          "experimentalEraseModules": false,
+          "startSceneAssetBundle": false,
+          "bundleConfigs": [],
+          "inlineEnum": true,
+          "useBuiltinServer": false,
+          "md5CacheOptions": {
+            "excludes": [],
+            "includes": [],
+            "replaceOnly": [],
+            "handleTemplateMd5Link": true
+          },
+          "mainBundleIsRemote": false,
+          "mainBundleCompressionType": "merge_dep",
+          "useSplashScreen": true,
+          "bundleCommonChunk": false,
+          "packAutoAtlas": true,
+          "startScene": "cf783a33-696e-4580-b287-eff1cd1958cf",
+          "outputName": "web-mobile",
+          "taskName": "web-mobile",
+          "scenes": [
+            {
+              "url": "db://assets/scenes/scene.scene",
+              "uuid": "cf783a33-696e-4580-b287-eff1cd1958cf"
+            }
+          ],
+          "wasmCompressionMode": false,
+          "packages": {},
+          "__version__": "1.3.9",
+          "logDest": "project://temp/builder/log/web-mobile14-5-2025 13-05.log",
+          "buildStageGroup": {
+            "build": [
+              "run"
+            ]
+          }
+        },
+        "time": "14-5-2025 13:07:43",
+        "dirty": false
+      },
+      "1747221060956": {
+        "type": "build",
+        "id": "1747221060956",
+        "progress": 1,
+        "state": "failure",
+        "stage": "build",
+        "message": "14.05.2025 13:12:48 build task failed! Error: run cmake failed \"cmake -S\"C:/CocosProject/TapGalaxy/native/engine/win64\" -B\"C:/CocosProject/TapGalaxy/build/windows/proj\" -DRES_DIR=\"C:/CocosProject/TapGalaxy/build/windows\" -DAPP_NAME=\"TapGalaxy\" -DLAUNCH_TYPE=\"Release\"\", code: 1, signal: null\n    at ChildProcess.<anonymous> (C:\\ProgramData\\cocos\\editors\\Creator\\3.8.6\\resources\\resources\\3d\\engine\\scripts\\native-pack-tool\\source\\utils.ts:484:28)\n    at ChildProcess.emit (node:events:519:28)\n    at maybeClose (node:internal/child_process:1105:16)\n    at Process.ChildProcess._handle.onexit (node:internal/child_process:305:5)",
+        "detailMessage": "Asset DB is resume!\r",
+        "options": {
+          "name": "TapGalaxy",
+          "server": "",
+          "engineModulesConfigKey": "defaultConfig",
+          "platform": "windows",
+          "buildPath": "project://build",
+          "debug": false,
+          "buildMode": "normal",
+          "mangleProperties": false,
+          "md5Cache": false,
+          "skipCompressTexture": false,
+          "sourceMaps": false,
+          "overwriteProjectSettings": {
+            "macroConfig": {
+              "cleanupImageCache": "inherit-project-setting"
+            },
+            "includeModules": {
+              "physics": "inherit-project-setting",
+              "physics-2d": "inherit-project-setting",
+              "gfx-webgl2": "off"
+            }
+          },
+          "nativeCodeBundleMode": "wasm",
+          "polyfills": {
+            "asyncFunctions": false
+          },
+          "experimentalEraseModules": false,
+          "startSceneAssetBundle": false,
+          "bundleConfigs": [],
+          "inlineEnum": true,
+          "useBuiltinServer": false,
+          "md5CacheOptions": {
+            "excludes": [],
+            "includes": [],
+            "replaceOnly": [],
+            "handleTemplateMd5Link": true
+          },
+          "mainBundleIsRemote": false,
+          "mainBundleCompressionType": "merge_dep",
+          "useSplashScreen": true,
+          "bundleCommonChunk": false,
+          "packAutoAtlas": true,
+          "startScene": "cf783a33-696e-4580-b287-eff1cd1958cf",
+          "outputName": "windows",
+          "taskName": "windows",
+          "scenes": [
+            {
+              "url": "db://assets/scenes/scene.scene",
+              "uuid": "cf783a33-696e-4580-b287-eff1cd1958cf"
+            }
+          ],
+          "wasmCompressionMode": false,
+          "packages": {},
+          "__version__": "1.3.9",
+          "logDest": "project://temp/builder/log/windows14-5-2025 13-11.log"
+        },
+        "time": "14-5-2025 13:11:00",
+        "dirty": false
+      }
+    }
+  },
+  "common": {
+    "polyfills": {
+      "asyncFunctions": true
+    },
+    "buildPath": "project://build",
+    "outputName": "android",
+    "mainBundleCompressionType": "merge_dep",
+    "platform": "android"
   }
 }
