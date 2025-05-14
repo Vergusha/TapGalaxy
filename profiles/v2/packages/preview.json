@@ -4,5 +4,8 @@
     "current": {
       "platform": "gameView"
     }
+  },
+  "general": {
+    "start_scene": "cf783a33-696e-4580-b287-eff1cd1958cf"
   }
 }
