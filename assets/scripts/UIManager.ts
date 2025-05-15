@@ -44,9 +44,13 @@ export class UIManager extends Component {
     }
 
     showPanel(panel: Node) {
-        if(this.currentPanel) {
-            this.currentPanel.active = false;
-        }
+        // Деактивируем все панели
+        if (this.gamePanel) this.gamePanel.active = false;
+        if (this.miningPanel) this.miningPanel.active = false;
+        if (this.spaceshipPanel) this.spaceshipPanel.active = false;
+        if (this.shopPanel) this.shopPanel.active = false;
+
+        // Активируем только нужную панель
         if (panel) {
             panel.active = true;
             this.currentPanel = panel;
