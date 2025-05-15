@@ -18,6 +18,9 @@ export class UIManager extends Component {
     @property(Node)
     shopPanel: Node = null;
 
+    @property(Node)
+    settingsPanel: Node = null;
+
     private static _instance: UIManager = null;
     
     // Add this line to declare the currentPanel property
@@ -29,6 +32,9 @@ export class UIManager extends Component {
         UIEvents.on('showMiningPanel', this.showMiningPanel, this);
         UIEvents.on('showSpaceshipPanel', this.showSpaceshipPanel, this);
         UIEvents.on('showShopPanel', this.showShopPanel, this);
+        UIEvents.on('showSettingsPanel', this.showSettingsPanel, this);
+        UIEvents.on('hideSettingsPanel', this.hideSettingsPanel, this);
+        UIEvents.on('toggleSettingsPanel', this.toggleSettingsPanel, this);
     }
 
     onDestroy() {
@@ -37,10 +43,18 @@ export class UIManager extends Component {
         UIEvents.off('showMiningPanel', this.showMiningPanel, this);
         UIEvents.off('showSpaceshipPanel', this.showSpaceshipPanel, this);
         UIEvents.off('showShopPanel', this.showShopPanel, this);
+        UIEvents.off('showSettingsPanel', this.showSettingsPanel, this);
+        UIEvents.off('hideSettingsPanel', this.hideSettingsPanel, this);
+        UIEvents.off('toggleSettingsPanel', this.toggleSettingsPanel, this);
     }
 
     protected start() {
         this.showPanel(this.gamePanel);
+        
+        // Скрываем панель настроек при старте
+        if (this.settingsPanel) {
+            this.settingsPanel.active = false;
+        }
     }
 
     showPanel(panel: Node) {
@@ -71,6 +85,28 @@ export class UIManager extends Component {
     
     showShopPanel() {
         this.showPanel(this.shopPanel);
+    }
+
+    showSettingsPanel() {
+        if (this.settingsPanel) {
+            this.settingsPanel.active = true;
+        }
+    }
+
+    hideSettingsPanel() {
+        if (this.settingsPanel) {
+            this.settingsPanel.active = false;
+        }
+    }
+
+    toggleSettingsPanel() {
+        if (this.settingsPanel) {
+            this.settingsPanel.active = !this.settingsPanel.active;
+        }
+    }
+
+    isSettingsPanelVisible(): boolean {
+        return this.settingsPanel && this.settingsPanel.active;
     }
 }
 
