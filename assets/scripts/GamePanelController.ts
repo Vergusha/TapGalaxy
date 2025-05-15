@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, AudioSource, resources, AudioClip } from 'cc';
 const { ccclass, property } = _decorator;
 
 // Импортируем MiningPanelController чтобы получить доступ к upgrade'ам
@@ -15,6 +15,12 @@ export class GamePanelController extends Component {
     @property(MiningPanelController)
     miningPanelController: MiningPanelController = null;
 
+    @property(AudioSource)
+    audioSource: AudioSource = null;
+    
+    @property({type: AudioClip})
+    clickSound: AudioClip = null;
+
     private dilitium: number = 0;
     private dilitiumPerClick: number = 1;
     private passiveTimer: number = 0;
@@ -29,6 +35,11 @@ export class GamePanelController extends Component {
     onPlanetClick() {
         this.dilitium += this.dilitiumPerClick;
         this.updateDilitiumText();
+        
+        // Воспроизводим звук при клике
+        if (this.audioSource && this.clickSound) {
+            this.audioSource.playOneShot(this.clickSound);
+        }
     }
     
     public upgradeMining() {

@@ -26,6 +26,7 @@ export class MiningPanelController extends Component {
     { name: 'Бур', level: 1, baseCost: 10, cost: 10, effect: 1 },
     { name: 'Шахтер', level: 0, baseCost: 50, cost: 50, effect: 5, passiveIncome: 2 },
     { name: 'Дрон', level: 0, baseCost: 200, cost: 200, effect: 20, passiveIncome: 10 },
+    { name: 'Шахта', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
 ];
 
     private passiveTimer: number = 0;
