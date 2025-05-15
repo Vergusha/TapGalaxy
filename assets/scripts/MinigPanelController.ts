@@ -8,6 +8,7 @@ type Upgrade = {
     baseCost: number;
     cost: number;
     effect: number;
+    passiveIncome?: number;
 };
 
 @ccclass('MiningPanelController')
@@ -22,12 +23,17 @@ export class MiningPanelController extends Component {
     upgradesContainer: Node = null; // Контейнер для апгрейдов (например, Vertical Layout)
 
     private upgrades: Upgrade[] = [
-        { name: 'Бур', level: 1, baseCost: 10, cost: 10, effect: 1 },
-        { name: 'Шахтер', level: 1, baseCost: 50, cost: 50, effect: 5 },
-        { name: 'Дрон', level: 1, baseCost: 200, cost: 200, effect: 20 },
-    ];
+    { name: 'Бур', level: 1, baseCost: 10, cost: 10, effect: 1 },
+    { name: 'Шахтер', level: 0, baseCost: 50, cost: 50, effect: 5, passiveIncome: 2 },
+    { name: 'Дрон', level: 0, baseCost: 200, cost: 200, effect: 20, passiveIncome: 10 },
+];
+
+    private passiveTimer: number = 0;
 
     start() {
+        // Очищаем контейнер перед добавлением новых элементов
+        this.upgradesContainer.removeAllChildren();
+
         for (let i = 0; i < this.upgrades.length; i++) {
             const upg = this.upgrades[i];
             const item = instantiate(this.upgradeItemPrefab);
@@ -51,16 +57,28 @@ export class MiningPanelController extends Component {
         }
     }
 
+    update(dt: number) {
+        // Логика обработки пассивного дохода теперь в GamePanelController
+    }
+
     buyUpgrade(index: number, levelLabel: Label, costLabel: Label) {
         const upgrade = this.upgrades[index];
-        if (this.gamePanelController['dilitium'] >= upgrade.cost) {
-            this.gamePanelController['dilitium'] -= upgrade.cost;
+        const currentDilitium = this.gamePanelController.getDilitium();
+        
+        if (currentDilitium >= upgrade.cost) {
+            this.gamePanelController.setDilitium(currentDilitium - upgrade.cost);
             upgrade.level += 1;
             upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.level - 1));
-            this.gamePanelController['dilitiumPerClick'] += upgrade.effect;
+            
+            const newClickValue = this.gamePanelController.getDilitiumPerClick() + upgrade.effect;
+            this.gamePanelController.setDilitiumPerClick(newClickValue);
+            
             if (levelLabel) levelLabel.string = `Ур. ${upgrade.level}`;
             if (costLabel) costLabel.string = `${upgrade.cost}`;
-            this.gamePanelController.updateDilitiumText();
         }
+    }
+
+    public getUpgrades(): Upgrade[] {
+        return this.upgrades;
     }
 }
