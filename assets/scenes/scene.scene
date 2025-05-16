@@ -2548,7 +2548,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 15.123046875,
+      "width": 19,
       "height": 54.4
     },
     "_anchorPoint": {
@@ -2583,12 +2583,15 @@
     "_verticalAlign": 1,
     "_actualFontSize": 20,
     "_fontSize": 20,
-    "_fontFamily": "Arial",
+    "_fontFamily": "Min",
     "_lineHeight": 40,
     "_overflow": 0,
     "_enableWrapText": false,
-    "_font": null,
-    "_isSystemFontUsed": true,
+    "_font": {
+      "__uuid__": "845550fd-7691-4f2d-be0f-c8e916e285d3",
+      "__expectedType__": "cc.TTFFont"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_isItalic": false,
     "_isBold": false,
@@ -2933,7 +2936,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 15.123046875,
+      "width": 19,
       "height": 54.4
     },
     "_anchorPoint": {
@@ -2968,12 +2971,15 @@
     "_verticalAlign": 1,
     "_actualFontSize": 20,
     "_fontSize": 20,
-    "_fontFamily": "Arial",
+    "_fontFamily": "Min",
     "_lineHeight": 40,
     "_overflow": 0,
     "_enableWrapText": false,
-    "_font": null,
-    "_isSystemFontUsed": true,
+    "_font": {
+      "__uuid__": "845550fd-7691-4f2d-be0f-c8e916e285d3",
+      "__expectedType__": "cc.TTFFont"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_isItalic": false,
     "_isBold": false,
@@ -3620,7 +3626,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 112.92578125,
+      "width": 124,
       "height": 54.4
     },
     "_anchorPoint": {
@@ -3655,12 +3661,15 @@
     "_verticalAlign": 1,
     "_actualFontSize": 40,
     "_fontSize": 40,
-    "_fontFamily": "Arial",
+    "_fontFamily": "Min",
     "_lineHeight": 40,
     "_overflow": 0,
-    "_enableWrapText": true,
-    "_font": null,
-    "_isSystemFontUsed": true,
+    "_enableWrapText": false,
+    "_font": {
+      "__uuid__": "845550fd-7691-4f2d-be0f-c8e916e285d3",
+      "__expectedType__": "cc.TTFFont"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_isItalic": false,
     "_isBold": false,
@@ -4083,7 +4092,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 121.83203125,
+      "width": 144,
       "height": 54.4
     },
     "_anchorPoint": {
@@ -4118,12 +4127,15 @@
     "_verticalAlign": 1,
     "_actualFontSize": 40,
     "_fontSize": 40,
-    "_fontFamily": "Arial",
+    "_fontFamily": "Min",
     "_lineHeight": 40,
     "_overflow": 0,
     "_enableWrapText": true,
-    "_font": null,
-    "_isSystemFontUsed": true,
+    "_font": {
+      "__uuid__": "845550fd-7691-4f2d-be0f-c8e916e285d3",
+      "__expectedType__": "cc.TTFFont"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_isItalic": false,
     "_isBold": false,
@@ -4546,7 +4558,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 190.796875,
+      "width": 254,
       "height": 54.4
     },
     "_anchorPoint": {
@@ -4581,12 +4593,15 @@
     "_verticalAlign": 1,
     "_actualFontSize": 40,
     "_fontSize": 40,
-    "_fontFamily": "Arial",
+    "_fontFamily": "Min",
     "_lineHeight": 40,
     "_overflow": 0,
     "_enableWrapText": true,
-    "_font": null,
-    "_isSystemFontUsed": true,
+    "_font": {
+      "__uuid__": "845550fd-7691-4f2d-be0f-c8e916e285d3",
+      "__expectedType__": "cc.TTFFont"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_isItalic": false,
     "_isBold": false,
@@ -5009,7 +5024,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 97.41796875,
+      "width": 124,
       "height": 54.4
     },
     "_anchorPoint": {
@@ -5044,12 +5059,15 @@
     "_verticalAlign": 1,
     "_actualFontSize": 40,
     "_fontSize": 40,
-    "_fontFamily": "Arial",
+    "_fontFamily": "Min",
     "_lineHeight": 40,
     "_overflow": 0,
     "_enableWrapText": true,
-    "_font": null,
-    "_isSystemFontUsed": true,
+    "_font": {
+      "__uuid__": "845550fd-7691-4f2d-be0f-c8e916e285d3",
+      "__expectedType__": "cc.TTFFont"
+    },
+    "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_isItalic": false,
     "_isBold": false,
@@ -5459,7 +5477,9 @@
     "dilitiumText": {
       "__id__": 69
     },
-    "miningPanelController": null,
+    "miningPanelController": {
+      "__id__": 146
+    },
     "audioSource": {
       "__id__": 148
     },
