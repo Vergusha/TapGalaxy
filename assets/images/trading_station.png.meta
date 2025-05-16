@@ -43,12 +43,12 @@
         "rotated": false,
         "offsetX": 0,
         "offsetY": 0,
-        "trimX": 4,
-        "trimY": 4,
-        "width": 56,
-        "height": 56,
-        "rawWidth": 64,
-        "rawHeight": 64,
+        "trimX": 1,
+        "trimY": 1,
+        "width": 14,
+        "height": 14,
+        "rawWidth": 16,
+        "rawHeight": 16,
         "borderTop": 0,
         "borderBottom": 0,
         "borderLeft": 0,
@@ -60,17 +60,17 @@
         "meshType": 0,
         "vertices": {
           "rawPosition": [
-            -28,
-            -28,
+            -7,
+            -7,
             0,
-            28,
-            -28,
+            7,
+            -7,
             0,
-            -28,
-            28,
+            -7,
+            7,
             0,
-            28,
-            28,
+            7,
+            7,
             0
           ],
           "indexes": [
@@ -82,14 +82,14 @@
             3
           ],
           "uv": [
-            4,
-            60,
-            60,
-            60,
-            4,
-            4,
-            60,
-            4
+            1,
+            15,
+            15,
+            15,
+            1,
+            1,
+            15,
+            1
           ],
           "nuv": [
             0.0625,
@@ -102,13 +102,13 @@
             0.9375
           ],
           "minPos": [
-            -28,
-            -28,
+            -7,
+            -7,
             0
           ],
           "maxPos": [
-            28,
-            28,
+            7,
+            7,
             0
           ]
         },
