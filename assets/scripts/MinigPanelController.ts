@@ -1,4 +1,4 @@
-import { _decorator, Component, Label, Node, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Label, Node, Prefab, instantiate, ScrollView, UITransform } from 'cc';
 import { GamePanelController } from './GamePanelController';
 const { ccclass, property } = _decorator;
 
@@ -20,13 +20,36 @@ export class MiningPanelController extends Component {
     upgradeItemPrefab: Prefab = null;
 
     @property(Node)
-    upgradesContainer: Node = null; // Контейнер для апгрейдов (например, Vertical Layout)
+    upgradesContainer: Node = null; // Теперь это должен быть content-узел ScrollView
+
+    // Добавляем ссылку на ScrollView компонент
+    @property(ScrollView)
+    scrollView: ScrollView = null;
 
     private upgrades: Upgrade[] = [
     { name: 'Бур', level: 1, baseCost: 10, cost: 10, effect: 1 },
     { name: 'Шахтер', level: 0, baseCost: 50, cost: 50, effect: 5, passiveIncome: 2 },
     { name: 'Дрон', level: 0, baseCost: 200, cost: 200, effect: 20, passiveIncome: 10 },
     { name: 'Шахта', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '1', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '2', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '3', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '4', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '5', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '6', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '7', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '8', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '9', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '10', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '11', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '12', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '13', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '14', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '15', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '16', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '17', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    { name: '18', level: 0, baseCost: 1000, cost: 1000, effect: 100, passiveIncome: 35 },
+    
 ];
 
     private passiveTimer: number = 0;
@@ -56,6 +79,28 @@ export class MiningPanelController extends Component {
                 }, this);
             }
         }
+        
+        // Обновляем размер content контейнера, чтобы учитывать все элементы
+        this.updateContentSize();
+    }
+    
+    // Добавляем метод для обновления размера content
+    private updateContentSize() {
+        if (!this.upgradesContainer) return;
+        
+        const contentUITransform = this.upgradesContainer.getComponent(UITransform);
+        if (!contentUITransform) return;
+        
+        // Вычисляем общую высоту на основе количества элементов
+        // Предполагается, что все элементы имеют одинаковую высоту
+        const itemHeight = 50; // Примерная высота одного элемента (уточните реальную высоту)
+        const totalHeight = this.upgrades.length * itemHeight;
+        
+        // Сохраняем оригинальную ширину
+        const width = contentUITransform.width;
+        
+        // Обновляем размер content
+        contentUITransform.setContentSize(width, totalHeight);
     }
 
     update(dt: number) {
