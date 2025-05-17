@@ -48,7 +48,7 @@ export class GamePanelController extends Component {
     
     updateDilitiumText() {
         if (this.dilitiumText) {
-            this.dilitiumText.string = this.dilitium.toString();
+            this.dilitiumText.string = this.formatNumber(this.dilitium);
         }
     }
 
@@ -95,5 +95,49 @@ export class GamePanelController extends Component {
     
     public setDilitiumPerClick(value: number) {
         this.dilitiumPerClick = value;
+    }
+    
+    private formatNumber(num: number): string {
+        if (num < 1000) return num.toString();
+        
+        const suffixes = ['', 'K', 'M', 'B', 'T'];
+        const alphabetSuffixes: string[] = [];
+        
+        // Generate alphabetical suffixes: aa-az, ba-bz, etc.
+        for (let firstChar = 97; firstChar <= 122; firstChar++) {
+            for (let secondChar = 97; secondChar <= 122; secondChar++) {
+                alphabetSuffixes.push(String.fromCharCode(firstChar) + String.fromCharCode(secondChar));
+            }
+        }
+        
+        // Combine all suffixes
+        const allSuffixes = [...suffixes, ...alphabetSuffixes];
+        
+        // Calculate exponent (powers of 1000): 0 = ones, 1 = thousands, 2 = millions, etc.
+        const exponent = Math.floor(Math.log(num) / Math.log(1000));
+        
+        // If the exponent is too large, just return scientific notation
+        if (exponent >= allSuffixes.length) {
+            return num.toExponential(2);
+        }
+        
+        // Get the suffix and calculate the mantissa (the number part)
+        const suffix = allSuffixes[exponent];
+        const mantissa = num / Math.pow(1000, exponent);
+        
+        // Format mantissa to have at most 3 significant digits
+        let formattedMantissa: string;
+        if (mantissa >= 100) {
+            formattedMantissa = mantissa.toFixed(0);
+        } else if (mantissa >= 10) {
+            formattedMantissa = mantissa.toFixed(1);
+        } else {
+            formattedMantissa = mantissa.toFixed(2);
+        }
+        
+        // Remove trailing zeros after decimal point
+        formattedMantissa = formattedMantissa.replace(/\.0+$|(\.\d*[1-9])0+$/, '$1');
+        
+        return formattedMantissa + suffix;
     }
 }
