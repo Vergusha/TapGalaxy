@@ -1,8 +1,8 @@
-import { _decorator, Component, Node, Label, AudioSource, resources, AudioClip } from 'cc';
-const { ccclass, property } = _decorator;
-
-// Импортируем MiningPanelController чтобы получить доступ к upgrade'ам
+import { _decorator, Component, Node, Label, AudioSource, AudioClip } from 'cc';
 import { MiningPanelController } from './MinigPanelController';
+import { UIEvents } from './UIManager'; // Add this import line
+
+const { ccclass, property } = _decorator;
 
 @ccclass('GamePanelController')
 export class GamePanelController extends Component {
@@ -21,6 +21,17 @@ export class GamePanelController extends Component {
     @property({type: AudioClip})
     clickSound: AudioClip = null;
 
+    // Add these new properties to the GamePanelController class
+    @property(Node)
+    trader: Node = null;  // Reference to the trader object
+
+    @property(Node)
+    traderPanel: Node = null;  // Reference to the trader panel
+
+    // Add this property to track game panel content
+    @property(Node)
+    gamePanelContent: Node = null;  // This should reference the main content of your game panel
+
     private dilitium: number = 0;
     private dilitiumPerClick: number = 1;
     private passiveTimer: number = 0;
@@ -29,7 +40,18 @@ export class GamePanelController extends Component {
         if (this.planet) {
             this.planet.on(Node.EventType.TOUCH_END, this.onPlanetClick, this);
         }
+        
+        // Add trader click handler
+        if (this.trader) {
+            this.trader.on(Node.EventType.TOUCH_END, this.onTraderClick, this);
+        }
+        
         this.updateDilitiumText();
+        
+        // Make sure trader panel is initially hidden
+        if (this.traderPanel) {
+            this.traderPanel.active = false;
+        }
     }
 
     onPlanetClick() {
@@ -139,5 +161,11 @@ export class GamePanelController extends Component {
         formattedMantissa = formattedMantissa.replace(/\.0+$|(\.\d*[1-9])0+$/, '$1');
         
         return formattedMantissa + suffix;
+    }
+
+    // Update the onTraderClick method
+    onTraderClick() {
+        // Trigger the trader panel toggle event
+        UIEvents.emit('toggleTraderPanel');
     }
 }

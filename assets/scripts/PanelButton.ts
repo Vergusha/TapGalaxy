@@ -13,7 +13,8 @@ export class PanelButton extends Component {
             'showGamePanel',
             'showMiningPanel',
             'showSpaceshipPanel',
-            'showShopPanel'
+            'showShopPanel',
+            'showTraderPanel' // Add this new option
         ]
     })
     eventToTrigger: string = 'showGamePanel';
