@@ -1,6 +1,9 @@
 import { _decorator, Component, Node, Prefab, instantiate, Label, Sprite, Button, ScrollView, UITransform } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
 import { UIEvents } from './UIManager';
+import { GameManager } from './GameManager';
+import { AudioManager } from './AudioManager';
+import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 // Define the trader upgrade type
@@ -28,10 +31,10 @@ export class TraderPanelController extends Component {
     @property(Sprite)
     currencyIconSprite: Sprite = null;
 
-    @property(Button)
-    closeButton: Button = null;
+    @property(Button)    closeButton: Button = null;
 
     private currencyManager: CurrencyManager = null;
+    private gameManager: GameManager = null;
     
     // Array of available trader upgrades
     private traderUpgrades: TraderUpgrade[] = [
@@ -79,10 +82,18 @@ export class TraderPanelController extends Component {
             passiveIncome: 10,
             description: 'Trade 50000 dilithium for 700 lunar, +10 passive lunar income'
         }
-    ];
-
-    start() {
+    ];    start() {
         this.currencyManager = CurrencyManager.getInstance();
+        this.gameManager = GameManager.getInstance();
+        
+        // Load trader upgrades from GameManager if available
+        const savedUpgrades = this.gameManager.getTraderUpgrades();
+        if (savedUpgrades && savedUpgrades.length > 0) {
+            this.traderUpgrades = savedUpgrades;
+        } else {
+            // Store initial upgrades in GameManager
+            this.gameManager.setTraderUpgrades(this.traderUpgrades);
+        }
         
         // Set up close button
         if (this.closeButton) {
@@ -129,10 +140,18 @@ export class TraderPanelController extends Component {
         if (levelLabel) levelLabel.string = `Ур. ${upg.level}`;
         if (costLabel) costLabel.string = this.formatNumber(upg.dilithiumCost);
         if (descriptionLabel) descriptionLabel.string = upg.description || '';
-        
-        // Set lunar icon
+          // Set lunar icon
         if (iconSprite && this.currencyIconSprite) {
             iconSprite.spriteFrame = this.currencyIconSprite.spriteFrame;
+            
+            // Configure icon size
+            const iconNode = iconSprite.node;
+            const iconTransform = iconNode.getComponent(UITransform);
+            if (iconTransform) {
+                // Set icon size
+                iconTransform.width = 48;
+                iconTransform.height = 48;
+            }
         }
 
         // Set button click handler
@@ -141,12 +160,13 @@ export class TraderPanelController extends Component {
                 this.tradeResources(index, levelLabel, costLabel);
             }, this);
         }
-    }
-    
-    // Trade dilithium for lunar
+    }    // Trade dilithium for lunar
     private tradeResources(index: number, levelLabel: Label, costLabel: Label) {
         const upgrade = this.traderUpgrades[index];
         const currentDilithium = this.currencyManager.getDilithium();
+        
+        const audioManager = AudioManager.getInstance();
+        const notificationManager = NotificationManager.getInstance();
         
         if (currentDilithium >= upgrade.dilithiumCost) {
             // Deduct the dilithium cost
@@ -154,6 +174,19 @@ export class TraderPanelController extends Component {
             
             // Add lunar reward
             this.currencyManager.addLunar(upgrade.lunarReward);
+            
+            // Play success sound
+            if (audioManager) {
+                audioManager.playPurchaseSuccess();
+            }
+            
+            // Show success notification
+            if (notificationManager) {
+                notificationManager.showSuccessNotification(
+                    `Обмен успешен! Получено +${upgrade.lunarReward} лунария`,
+                    2
+                );
+            }
             
             // For first purchase, level up and apply passive income
             if (upgrade.level === 0) {
@@ -163,10 +196,37 @@ export class TraderPanelController extends Component {
                 if (upgrade.passiveIncome) {
                     const newPassiveIncome = this.currencyManager.getPassiveLunar() + upgrade.passiveIncome;
                     this.currencyManager.setPassiveLunar(newPassiveIncome);
+                    
+                    // Special notification for passive income unlock
+                    if (notificationManager) {
+                        notificationManager.showInfoNotification(
+                            `Открыт пассивный доход лунария: +${upgrade.passiveIncome} в секунду!`,
+                            3
+                        );
+                    }
                 }
                 
                 // Update level label
                 if (levelLabel) levelLabel.string = `Ур. ${upgrade.level}`;
+                
+                // Save updated upgrades to GameManager
+                this.gameManager.setTraderUpgrades(this.traderUpgrades);
+                
+                // Manually save game
+                this.gameManager.saveGame();
+            }
+        } else {
+            // Not enough resources
+            if (audioManager) {
+                audioManager.playPurchaseFail();
+            }
+            
+            // Show notification
+            if (notificationManager) {
+                notificationManager.showWarningNotification(
+                    "Недостаточно дилития для обмена!",
+                    2
+                );
             }
         }
     }

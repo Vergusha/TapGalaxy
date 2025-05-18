@@ -212,13 +212,30 @@ export class CurrencyManager extends Component {
         this.passiveDilithium = value;
         this.saveGame();
     }
-    
-    public getPassiveLunar(): number {
+      public getPassiveLunar(): number {
         return this.passiveLunar;
     }
     
     public setPassiveLunar(value: number) {
         this.passiveLunar = value;
+        this.saveGame();
+    }
+    
+    public getPassiveXenobit(): number {
+        return this.passiveXenobit;
+    }
+    
+    public setPassiveXenobit(value: number) {
+        this.passiveXenobit = value;
+        this.saveGame();
+    }
+    
+    public getPassiveQuark(): number {
+        return this.passiveQuark;
+    }
+    
+    public setPassiveQuark(value: number) {
+        this.passiveQuark = value;
         this.saveGame();
     }
     
@@ -257,11 +274,10 @@ export class CurrencyManager extends Component {
         
         if (this.quarkLabel) {
             this.quarkLabel.string = this.formatNumber(this.quark);
-        }
-    }
+        }    }
     
     // Format large numbers with suffixes (K, M, B, etc.)
-    private formatNumber(num: number): string {
+    public formatNumber(num: number): string {
         if (num < 1000) return Math.floor(num).toString();
         
         const suffixes = ['', 'K', 'M', 'B', 'T'];

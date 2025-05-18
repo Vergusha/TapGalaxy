@@ -1,6 +1,8 @@
 import { _decorator, Component, Node, Button } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
 import { UIEvents } from './UIManager';
+import { AudioManager } from './AudioManager';
+import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('GamePanelController')
@@ -67,17 +69,37 @@ export class GamePanelController extends Component {
     update(deltaTime: number) {
         // No specific update logic for GamePanelController
     }
-    
-    // Handle planet click - player gets dilithium
+      // Handle planet click - player gets dilithium
     private onPlanetClick() {
         if (this.currencyManager) {
-            this.currencyManager.addDilithium(this.currencyManager.getDilithiumPerClick());
+            const amount = this.currencyManager.getDilithiumPerClick();
+            this.currencyManager.addDilithium(amount);
+            
+            // Play sound effect
+            const audioManager = AudioManager.getInstance();
+            if (audioManager) {
+                audioManager.playResourceGain();
+            }
+            
+            // Occasionally show a notification
+            if (Math.random() < 0.05) { // 5% chance
+                const notificationManager = NotificationManager.getInstance();
+                if (notificationManager) {
+                    notificationManager.showInfoNotification(`+${this.currencyManager.formatNumber(amount)} дилития!`, 1.5);
+                }
+            }
         }
     }
     
     // Handle trader click - open trader panel
     private onTraderClick() {
         UIEvents.emit('toggleTraderPanel');
+        
+        // Play button click sound
+        const audioManager = AudioManager.getInstance();
+        if (audioManager) {
+            audioManager.playButtonClick();
+        }
     }
 }
 

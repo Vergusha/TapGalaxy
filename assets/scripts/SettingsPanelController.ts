@@ -1,6 +1,9 @@
-import { _decorator, Component, Node, Button, Slider, Label, Toggle } from 'cc';
+import { _decorator, Component, Node, Button, Slider, Label, Toggle, director } from 'cc';
 import { UIEvents } from './UIManager';
 import { GameManager } from './GameManager';
+import { SaveManager } from './SaveManager';
+import { AudioManager } from './AudioManager';
+import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('SettingsPanelController')
@@ -62,19 +65,20 @@ export class SettingsPanelController extends Component {
     private onCloseButtonClick() {
         UIEvents.emit('hideSettingsPanel');
     }
-    
-    // Reset button click handler
+      // Reset button click handler
     private onResetButtonClick() {
         // Show a confirmation dialog before resetting
-        if (confirm('Are you sure you want to reset all game progress? This cannot be undone.')) {
-            const gameManager = GameManager.getInstance();
-            if (gameManager) {
-                gameManager.resetGame();
+        if (confirm('Вы уверены, что хотите сбросить весь прогресс игры? Это действие нельзя отменить.')) {
+            const saveManager = SaveManager.getInstance();
+            if (saveManager) {
+                saveManager.resetGame();
+                
+                // Reload the scene
+                director.loadScene(director.getScene().name);
             }
         }
     }
-    
-    // Music volume slider handler
+      // Music volume slider handler
     private onMusicVolumeChange(slider: Slider) {
         const volume = slider.progress;
         // Update music volume label (0-100%)
@@ -82,11 +86,11 @@ export class SettingsPanelController extends Component {
             this.musicVolumeLabel.string = `${Math.round(volume * 100)}%`;
         }
         
-        // Save music volume preference
-        this.saveMusicVolume(volume);
-        
         // Apply music volume change
-        // TODO: Implement music volume change when audio system is added
+        const audioManager = AudioManager.getInstance();
+        if (audioManager) {
+            audioManager.setMusicVolume(volume);
+        }
     }
     
     // Sound volume slider handler
@@ -97,38 +101,35 @@ export class SettingsPanelController extends Component {
             this.soundVolumeLabel.string = `${Math.round(volume * 100)}%`;
         }
         
-        // Save sound volume preference
-        this.saveSoundVolume(volume);
-        
         // Apply sound volume change
-        // TODO: Implement sound volume change when audio system is added
+        const audioManager = AudioManager.getInstance();
+        if (audioManager) {
+            audioManager.setSFXVolume(volume);
+        }
     }
     
     // Notifications toggle handler
     private onNotificationsToggle(toggle: Toggle) {
         const enabled = toggle.isChecked;
         
-        // Save notification preference
-        this.saveNotificationPreference(enabled);
-        
         // Apply notification setting
-        // TODO: Implement notification system
-    }
-    
-    // Save and load preferences
-    private saveMusicVolume(volume: number) {
-        try {
-            localStorage.setItem('tap_galaxy_music_volume', volume.toString());
-        } catch (e) {
-            console.error('Failed to save music volume:', e);
+        const notificationManager = NotificationManager.getInstance();
+        if (notificationManager) {
+            notificationManager.setNotificationsEnabled(enabled);
+            
+            // Show a test notification if enabled
+            if (enabled) {
+                notificationManager.showInfoNotification("Уведомления включены", 2);
+            }
         }
     }
-    
+      // Load functions
     private loadMusicVolume() {
         try {
-            const savedVolume = localStorage.getItem('tap_galaxy_music_volume');
-            if (savedVolume !== null) {
-                const volume = parseFloat(savedVolume);
+            // Get volume from AudioManager
+            const audioManager = AudioManager.getInstance();
+            if (audioManager) {
+                const volume = audioManager.getMusicVolume();
                 this.musicVolumeSlider.progress = volume;
                 if (this.musicVolumeLabel) {
                     this.musicVolumeLabel.string = `${Math.round(volume * 100)}%`;
@@ -139,19 +140,12 @@ export class SettingsPanelController extends Component {
         }
     }
     
-    private saveSoundVolume(volume: number) {
-        try {
-            localStorage.setItem('tap_galaxy_sound_volume', volume.toString());
-        } catch (e) {
-            console.error('Failed to save sound volume:', e);
-        }
-    }
-    
     private loadSoundVolume() {
         try {
-            const savedVolume = localStorage.getItem('tap_galaxy_sound_volume');
-            if (savedVolume !== null) {
-                const volume = parseFloat(savedVolume);
+            // Get volume from AudioManager
+            const audioManager = AudioManager.getInstance();
+            if (audioManager) {
+                const volume = audioManager.getSFXVolume();
                 this.soundVolumeSlider.progress = volume;
                 if (this.soundVolumeLabel) {
                     this.soundVolumeLabel.string = `${Math.round(volume * 100)}%`;
@@ -162,22 +156,14 @@ export class SettingsPanelController extends Component {
         }
     }
     
-    private saveNotificationPreference(enabled: boolean) {
-        try {
-            localStorage.setItem('tap_galaxy_notifications', enabled.toString());
-        } catch (e) {
-            console.error('Failed to save notification preference:', e);
-        }
-    }
-    
     private loadNotificationPreference() {
         try {
-            const savedPreference = localStorage.getItem('tap_galaxy_notifications');
-            if (savedPreference !== null) {
-                const enabled = savedPreference === 'true';
+            // Get notification preference from NotificationManager
+            const notificationManager = NotificationManager.getInstance();
+            if (notificationManager) {
+                const enabled = notificationManager.areNotificationsEnabled();
                 this.notificationsToggle.isChecked = enabled;
-            }
-        } catch (e) {
+            }        } catch (e) {
             console.error('Failed to load notification preference:', e);
         }
     }

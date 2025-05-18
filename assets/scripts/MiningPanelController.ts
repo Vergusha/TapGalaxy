@@ -1,6 +1,9 @@
 import { _decorator, Component, Node, Prefab, instantiate, Label, Sprite, Button, ScrollView, UITransform } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
 import { UIEvents } from './UIManager';
+import { GameManager } from './GameManager';
+import { AudioManager } from './AudioManager';
+import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 // Define the upgrade type
@@ -29,9 +32,8 @@ export class MiningPanelController extends Component {
     currencyIconSprite: Sprite = null;
 
     @property(Button)
-    closeButton: Button = null;
-
-    private currencyManager: CurrencyManager = null;
+    closeButton: Button = null;    private currencyManager: CurrencyManager = null;
+    private gameManager: GameManager = null;
     
     // Array of available mining upgrades
     private upgrades: Upgrade[] = [
@@ -79,8 +81,22 @@ export class MiningPanelController extends Component {
             passiveIncome: 100,
             description: '+500 per click, +100 passive income'
         }
-    ];    start() {
+    ];    onLoad() {
+        // Initialize
+    }
+    
+    start() {
         this.currencyManager = CurrencyManager.getInstance();
+        this.gameManager = GameManager.getInstance();
+        
+        // Load upgrades from GameManager if available
+        const savedUpgrades = this.gameManager.getMiningUpgrades();
+        if (savedUpgrades && savedUpgrades.length > 0) {
+            this.upgrades = savedUpgrades;
+        } else {
+            // Store initial upgrades in GameManager
+            this.gameManager.setMiningUpgrades(this.upgrades);
+        }
         
         // Clear the container before adding new items
         this.upgradesContainer.removeAllChildren();
@@ -115,9 +131,7 @@ export class MiningPanelController extends Component {
         const iconSprite = item.getChildByName('IconSprite')?.getComponent(Sprite);
         const costLabel = item.getChildByName('CostLabel')?.getComponent(Label);
         const descriptionLabel = item.getChildByName('DescriptionLabel')?.getComponent(Label);
-        const buyButton = item.getChildByName('BuyButton');
-
-        // Set values
+        const buyButton = item.getChildByName('BuyButton');        // Set values
         if (nameLabel) nameLabel.string = upg.name;
         if (levelLabel) levelLabel.string = `Ур. ${upg.level}`;
         if (costLabel) costLabel.string = this.formatNumber(upg.cost);
@@ -126,6 +140,16 @@ export class MiningPanelController extends Component {
         // Set dilithium icon
         if (iconSprite && this.currencyIconSprite) {
             iconSprite.spriteFrame = this.currencyIconSprite.spriteFrame;
+            
+            // Настраиваем размер иконки
+            const iconNode = iconSprite.node;
+            // Проверяем, имеет ли родительский узел UITransform компонент
+            const iconTransform = iconNode.getComponent(UITransform);
+            if (iconTransform) {
+                // Устанавливаем размер иконки (увеличиваем в 1.5 раза)
+                iconTransform.width = 48;
+                iconTransform.height = 48;
+            }
         }
 
         // Set button click handler
@@ -134,12 +158,13 @@ export class MiningPanelController extends Component {
                 this.buyUpgrade(index, levelLabel, costLabel);
             }, this);
         }
-    }
-    
-    // Buy an upgrade
+    }    // Buy an upgrade
     private buyUpgrade(index: number, levelLabel: Label, costLabel: Label) {
         const upgrade = this.upgrades[index];
         const currentDilithium = this.currencyManager.getDilithium();
+        
+        const audioManager = AudioManager.getInstance();
+        const notificationManager = NotificationManager.getInstance();
         
         if (currentDilithium >= upgrade.cost) {
             // Deduct the cost
@@ -164,6 +189,38 @@ export class MiningPanelController extends Component {
             // Update UI
             if (levelLabel) levelLabel.string = `Ур. ${upgrade.level}`;
             if (costLabel) costLabel.string = this.formatNumber(upgrade.cost);
+            
+            // Save the updated upgrades in GameManager
+            this.gameManager.setMiningUpgrades(this.upgrades);
+            
+            // Manually save game data
+            this.gameManager.saveGame();
+            
+            // Play success sound
+            if (audioManager) {
+                audioManager.playPurchaseSuccess();
+            }
+            
+            // Show notification
+            if (notificationManager) {
+                notificationManager.showSuccessNotification(
+                    `Улучшение "${upgrade.name}" приобретено! (Уровень ${upgrade.level})`, 
+                    2
+                );
+            }
+        } else {
+            // Not enough resources
+            if (audioManager) {
+                audioManager.playPurchaseFail();
+            }
+            
+            // Show notification
+            if (notificationManager) {
+                notificationManager.showWarningNotification(
+                    "Недостаточно дилития для покупки улучшения!",
+                    2
+                );
+            }
         }
     }
     
