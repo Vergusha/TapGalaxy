@@ -2,12 +2,12 @@
   "ver": "1.1.50",
   "importer": "prefab",
   "imported": true,
-  "uuid": "66cb6ab2-836c-4c93-a1c3-ff45cf8a6d51",
+  "uuid": "6d8ffa45-cf4c-4216-b45f-fa837df426ac",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "syncNodeName": "LunarUpgradeItem"
+    "syncNodeName": "MiningUpdate"
   }
 }

@@ -1,8 +1,35 @@
-import { _decorator, Component, Node, EventTarget } from 'cc';
+import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
-// Create a global event target
-export const UIEvents = new EventTarget();
+// Event system for UI-related events
+export class UIEvents {
+    private static handlers: {[eventName: string]: Function[]} = {};
+    
+    static on(eventName: string, handler: Function, target?: any) {
+        if (!this.handlers[eventName]) {
+            this.handlers[eventName] = [];
+        }
+        handler = target ? handler.bind(target) : handler;
+        this.handlers[eventName].push(handler);
+    }
+    
+    static off(eventName: string, handler: Function, target?: any) {
+        if (!this.handlers[eventName]) return;
+        
+        const idx = this.handlers[eventName].indexOf(handler);
+        if (idx !== -1) {
+            this.handlers[eventName].splice(idx, 1);
+        }
+    }
+    
+    static emit(eventName: string, ...args: any[]) {
+        if (!this.handlers[eventName]) return;
+        
+        for (const handler of this.handlers[eventName]) {
+            handler(...args);
+        }
+    }
+}
 
 @ccclass('UIManager')
 export class UIManager extends Component {
@@ -21,16 +48,22 @@ export class UIManager extends Component {
     @property(Node)
     settingsPanel: Node = null;
 
-    // Add this property to UIManager class
     @property(Node)
-    traderPanel: Node = null; // Reference to the trader panel
+    traderPanel: Node = null;
 
     private static _instance: UIManager = null;
     
-    // Add this line to declare the currentPanel property
+    // Keep track of which panel is currently active
     private currentPanel: Node = null;
 
     onLoad() {
+        // Create a singleton instance
+        if (UIManager._instance !== null) {
+            this.destroy();
+            return;
+        }
+        UIManager._instance = this;
+        
         // Register event listeners
         UIEvents.on('showGamePanel', this.showGamePanel, this);
         UIEvents.on('showMiningPanel', this.showMiningPanel, this);
@@ -63,30 +96,27 @@ export class UIManager extends Component {
     }
 
     protected start() {
-        this.showPanel(this.gamePanel);
-        
-        // Hide settings and trader panels on start
-        if (this.settingsPanel) {
-            this.settingsPanel.active = false;
-        }
-        
-        if (this.traderPanel) {
-            this.traderPanel.active = false;
-        }
+        // Default to the game panel at start
+        this.showGamePanel();
     }
 
-    showPanel(panel: Node) {
-        // Деактивируем все панели
-        if (this.gamePanel) this.gamePanel.active = false;
-        if (this.miningPanel) this.miningPanel.active = false;
-        if (this.spaceshipPanel) this.spaceshipPanel.active = false;
-        if (this.shopPanel) this.shopPanel.active = false;
+    // Get singleton instance
+    public static getInstance(): UIManager {
+        return UIManager._instance;
+    }
 
-        // Активируем только нужную панель
-        if (panel) {
-            panel.active = true;
-            this.currentPanel = panel;
+    // Helper method to show a panel and hide all others
+    showPanel(panel: Node) {
+        if (!panel) return;
+        
+        // Hide current panel
+        if (this.currentPanel) {
+            this.currentPanel.active = false;
         }
+        
+        // Show new panel
+        panel.active = true;
+        this.currentPanel = panel;
     }
     
     showGamePanel() {
@@ -127,7 +157,7 @@ export class UIManager extends Component {
         return this.settingsPanel && this.settingsPanel.active;
     }
 
-    // Update trader panel methods
+    // Trader panel methods
     showTraderPanel() {
         if (this.traderPanel) {
             this.traderPanel.active = true;
@@ -150,5 +180,3 @@ export class UIManager extends Component {
         return this.traderPanel && this.traderPanel.active;
     }
 }
-
-

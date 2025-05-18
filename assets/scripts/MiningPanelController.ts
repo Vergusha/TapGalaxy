@@ -1,23 +1,22 @@
 import { _decorator, Component, Node, Prefab, instantiate, Label, Sprite, Button, ScrollView, UITransform } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
-import { UIEvents } from './UIManager';
 const { ccclass, property } = _decorator;
 
-// Define the trader upgrade type
-type TraderUpgrade = {
+// Define the upgrade type
+type Upgrade = {
     name: string;
     level: number;
     baseCost: number;
-    dilithiumCost: number;
-    lunarReward: number;
+    cost: number;
+    effect: number;
     passiveIncome?: number;
     description?: string;
 };
 
-@ccclass('TraderPanelController')
-export class TraderPanelController extends Component {
+@ccclass('MiningPanelController')
+export class MiningPanelController extends Component {
     @property(Prefab)
-    traderItemPrefab: Prefab = null;
+    upgradeItemPrefab: Prefab = null;
 
     @property(Node)
     upgradesContainer: Node = null;
@@ -28,73 +27,65 @@ export class TraderPanelController extends Component {
     @property(Sprite)
     currencyIconSprite: Sprite = null;
 
-    @property(Button)
-    closeButton: Button = null;
-
     private currencyManager: CurrencyManager = null;
     
-    // Array of available trader upgrades
-    private traderUpgrades: TraderUpgrade[] = [
+    // Array of available mining upgrades
+    private upgrades: Upgrade[] = [
         { 
-            name: 'Small Trade', 
+            name: 'Drill', 
             level: 1, 
-            baseCost: 100, 
-            dilithiumCost: 100, 
-            lunarReward: 1,
-            description: 'Trade 100 dilithium for 1 lunar'
+            baseCost: 10, 
+            cost: 10, 
+            effect: 1,
+            description: '+1 dilithium per click'
         },
         { 
-            name: 'Medium Trade', 
+            name: 'Miner', 
             level: 0, 
-            baseCost: 500, 
-            dilithiumCost: 500, 
-            lunarReward: 6, 
-            passiveIncome: 0.1,
-            description: 'Trade 500 dilithium for 6 lunar, +0.1 passive lunar income'
-        },
-        { 
-            name: 'Large Trade', 
-            level: 0, 
-            baseCost: 2000, 
-            dilithiumCost: 2000, 
-            lunarReward: 25, 
-            passiveIncome: 0.5,
-            description: 'Trade 2000 dilithium for 25 lunar, +0.5 passive lunar income'
-        },
-        { 
-            name: 'Bulk Trade', 
-            level: 0, 
-            baseCost: 10000, 
-            dilithiumCost: 10000, 
-            lunarReward: 130, 
+            baseCost: 50, 
+            cost: 50, 
+            effect: 5, 
             passiveIncome: 2,
-            description: 'Trade 10000 dilithium for 130 lunar, +2 passive lunar income'
+            description: '+5 per click, +2 passive income'
         },
         { 
-            name: 'Mega Trade', 
+            name: 'Drone', 
             level: 0, 
-            baseCost: 50000, 
-            dilithiumCost: 50000, 
-            lunarReward: 700, 
+            baseCost: 200, 
+            cost: 200, 
+            effect: 20, 
             passiveIncome: 10,
-            description: 'Trade 50000 dilithium for 700 lunar, +10 passive lunar income'
+            description: '+20 per click, +10 passive income'
+        },
+        { 
+            name: 'Mine', 
+            level: 0, 
+            baseCost: 1000, 
+            cost: 1000, 
+            effect: 100, 
+            passiveIncome: 35,
+            description: '+100 per click, +35 passive income'
+        },
+        { 
+            name: 'Mining Station', 
+            level: 0, 
+            baseCost: 5000, 
+            cost: 5000, 
+            effect: 500, 
+            passiveIncome: 100,
+            description: '+500 per click, +100 passive income'
         }
     ];
 
     start() {
         this.currencyManager = CurrencyManager.getInstance();
         
-        // Set up close button
-        if (this.closeButton) {
-            this.closeButton.node.on(Button.EventType.CLICK, this.onCloseButtonClick, this);
-        }
-        
         // Clear the container before adding new items
         this.upgradesContainer.removeAllChildren();
 
-        // Create trader upgrade items
-        for (let i = 0; i < this.traderUpgrades.length; i++) {
-            this.createTraderItem(i);
+        // Create upgrade items
+        for (let i = 0; i < this.upgrades.length; i++) {
+            this.createUpgradeItem(i);
         }
         
         // Update the content size to accommodate all items
@@ -102,18 +93,13 @@ export class TraderPanelController extends Component {
     }
 
     update(deltaTime: number) {
-        // No specific update logic for TraderPanelController
+        // No specific update logic for MiningPanelController
     }
     
-    // Close the trader panel
-    private onCloseButtonClick() {
-        UIEvents.emit('hideTraderPanel');
-    }
-    
-    // Create a trader item from the prefab
-    private createTraderItem(index: number) {
-        const upg = this.traderUpgrades[index];
-        const item = instantiate(this.traderItemPrefab);
+    // Create an upgrade item from the prefab
+    private createUpgradeItem(index: number) {
+        const upg = this.upgrades[index];
+        const item = instantiate(this.upgradeItemPrefab);
         this.upgradesContainer.addChild(item);
 
         // Get components from the prefab
@@ -127,10 +113,10 @@ export class TraderPanelController extends Component {
         // Set values
         if (nameLabel) nameLabel.string = upg.name;
         if (levelLabel) levelLabel.string = `Ур. ${upg.level}`;
-        if (costLabel) costLabel.string = this.formatNumber(upg.dilithiumCost);
+        if (costLabel) costLabel.string = this.formatNumber(upg.cost);
         if (descriptionLabel) descriptionLabel.string = upg.description || '';
         
-        // Set lunar icon
+        // Set dilithium icon
         if (iconSprite && this.currencyIconSprite) {
             iconSprite.spriteFrame = this.currencyIconSprite.spriteFrame;
         }
@@ -138,40 +124,43 @@ export class TraderPanelController extends Component {
         // Set button click handler
         if (buyButton) {
             buyButton.on(Node.EventType.TOUCH_END, () => {
-                this.tradeResources(index, levelLabel, costLabel);
+                this.buyUpgrade(index, levelLabel, costLabel);
             }, this);
         }
     }
     
-    // Trade dilithium for lunar
-    private tradeResources(index: number, levelLabel: Label, costLabel: Label) {
-        const upgrade = this.traderUpgrades[index];
+    // Buy an upgrade
+    private buyUpgrade(index: number, levelLabel: Label, costLabel: Label) {
+        const upgrade = this.upgrades[index];
         const currentDilithium = this.currencyManager.getDilithium();
         
-        if (currentDilithium >= upgrade.dilithiumCost) {
-            // Deduct the dilithium cost
-            this.currencyManager.setDilithium(currentDilithium - upgrade.dilithiumCost);
+        if (currentDilithium >= upgrade.cost) {
+            // Deduct the cost
+            this.currencyManager.setDilithium(currentDilithium - upgrade.cost);
             
-            // Add lunar reward
-            this.currencyManager.addLunar(upgrade.lunarReward);
+            // Level up the upgrade
+            upgrade.level += 1;
             
-            // For first purchase, level up and apply passive income
-            if (upgrade.level === 0) {
-                upgrade.level = 1;
-                
-                // Apply passive income if available
-                if (upgrade.passiveIncome) {
-                    const newPassiveIncome = this.currencyManager.getPassiveLunar() + upgrade.passiveIncome;
-                    this.currencyManager.setPassiveLunar(newPassiveIncome);
-                }
-                
-                // Update level label
-                if (levelLabel) levelLabel.string = `Ур. ${upgrade.level}`;
+            // Recalculate cost (cost increases with each level)
+            upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.5, upgrade.level));
+            
+            // Apply the upgrade effects
+            const newClickValue = this.currencyManager.getDilithiumPerClick() + upgrade.effect;
+            this.currencyManager.setDilithiumPerClick(newClickValue);
+            
+            // Apply passive income if available
+            if (upgrade.passiveIncome) {
+                const newPassiveIncome = this.currencyManager.getPassiveDilithium() + upgrade.passiveIncome;
+                this.currencyManager.setPassiveDilithium(newPassiveIncome);
             }
+            
+            // Update UI
+            if (levelLabel) levelLabel.string = `Ур. ${upgrade.level}`;
+            if (costLabel) costLabel.string = this.formatNumber(upgrade.cost);
         }
     }
     
-    // Update the content size to fit all trader items
+    // Update the content size to fit all upgrade items
     private updateContentSize() {
         if (!this.scrollView || !this.upgradesContainer) return;
         
@@ -180,7 +169,7 @@ export class TraderPanelController extends Component {
         
         // Assume each item has a height of 100 (adjust as needed)
         const itemHeight = 100;
-        const totalHeight = this.traderUpgrades.length * itemHeight;
+        const totalHeight = this.upgrades.length * itemHeight;
         
         // Set content height to accommodate all items
         const currentContentSize = contentUITransform.contentSize;
@@ -232,9 +221,9 @@ export class TraderPanelController extends Component {
         return formattedMantissa + suffix;
     }
     
-    // Get the trader upgrades array (for other components to access)
-    public getTraderUpgrades(): TraderUpgrade[] {
-        return this.traderUpgrades;
+    // Get the upgrades array (for other components to access)
+    public getUpgrades(): Upgrade[] {
+        return this.upgrades;
     }
 }
 

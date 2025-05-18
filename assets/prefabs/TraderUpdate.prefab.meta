@@ -2,12 +2,12 @@
   "ver": "1.1.50",
   "importer": "prefab",
   "imported": true,
-  "uuid": "da208d43-1e0c-450a-b2e4-7401e7a1d8b9",
+  "uuid": "67cdb973-daf5-4eea-8ebe-6da5d225409c",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "syncNodeName": "MiningUpgradeItem"
+    "syncNodeName": "TraderUpdate"
   }
 }
