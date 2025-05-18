@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Prefab, instantiate, Label, Sprite, Button, ScrollView, UITransform } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
+import { UIEvents } from './UIManager';
 const { ccclass, property } = _decorator;
 
 // Define the upgrade type
@@ -26,6 +27,9 @@ export class MiningPanelController extends Component {
 
     @property(Sprite)
     currencyIconSprite: Sprite = null;
+
+    @property(Button)
+    closeButton: Button = null;
 
     private currencyManager: CurrencyManager = null;
     
@@ -75,9 +79,7 @@ export class MiningPanelController extends Component {
             passiveIncome: 100,
             description: '+500 per click, +100 passive income'
         }
-    ];
-
-    start() {
+    ];    start() {
         this.currencyManager = CurrencyManager.getInstance();
         
         // Clear the container before adding new items
@@ -90,6 +92,11 @@ export class MiningPanelController extends Component {
         
         // Update the content size to accommodate all items
         this.updateContentSize();
+        
+        // Set up close button if it exists
+        if (this.closeButton) {
+            this.closeButton.node.on(Button.EventType.CLICK, this.onCloseButtonClick, this);
+        }
     }
 
     update(deltaTime: number) {
@@ -224,6 +231,12 @@ export class MiningPanelController extends Component {
     // Get the upgrades array (for other components to access)
     public getUpgrades(): Upgrade[] {
         return this.upgrades;
+    }
+    
+    // Close button click handler
+    private onCloseButtonClick() {
+        // Показываем Game Panel
+        UIEvents.emit('showGamePanel');
     }
 }
 

@@ -133,10 +133,13 @@ export class UIManager extends Component {
     
     showShopPanel() {
         this.showPanel(this.shopPanel);
-    }
-
-    showSettingsPanel() {
+    }    showSettingsPanel() {
         if (this.settingsPanel) {
+            // Store the currently active panel before showing settings
+            if (this.currentPanel) {
+                // Don't change currentPanel reference, just hide it temporarily
+                this.currentPanel.active = false;
+            }
             this.settingsPanel.active = true;
         }
     }
@@ -144,22 +147,33 @@ export class UIManager extends Component {
     hideSettingsPanel() {
         if (this.settingsPanel) {
             this.settingsPanel.active = false;
+            // Restore the previously active panel
+            if (this.currentPanel) {
+                this.currentPanel.active = true;
+            }
         }
     }
 
     toggleSettingsPanel() {
         if (this.settingsPanel) {
-            this.settingsPanel.active = !this.settingsPanel.active;
+            if (this.settingsPanel.active) {
+                this.hideSettingsPanel();
+            } else {
+                this.showSettingsPanel();
+            }
         }
     }
 
     isSettingsPanelVisible(): boolean {
         return this.settingsPanel && this.settingsPanel.active;
-    }
-
-    // Trader panel methods
+    }    // Trader panel methods
     showTraderPanel() {
         if (this.traderPanel) {
+            // Store the currently active panel before showing trader
+            if (this.currentPanel) {
+                // Don't change currentPanel reference, just hide it temporarily
+                this.currentPanel.active = false;
+            }
             this.traderPanel.active = true;
         }
     }
@@ -167,12 +181,20 @@ export class UIManager extends Component {
     hideTraderPanel() {
         if (this.traderPanel) {
             this.traderPanel.active = false;
+            // Restore the previously active panel
+            if (this.currentPanel) {
+                this.currentPanel.active = true;
+            }
         }
     }
 
     toggleTraderPanel() {
         if (this.traderPanel) {
-            this.traderPanel.active = !this.traderPanel.active;
+            if (this.traderPanel.active) {
+                this.hideTraderPanel();
+            } else {
+                this.showTraderPanel();
+            }
         }
     }
 
