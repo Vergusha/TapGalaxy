@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Label, AudioSource, AudioClip } from 'cc';
 import { MiningPanelController } from './MinigPanelController';
+import { TraderPanelController } from './TraderPanelController';
 import { UIEvents } from './UIManager'; // Add this import line
 
 const { ccclass, property } = _decorator;
@@ -12,8 +13,14 @@ export class GamePanelController extends Component {
     @property(Label)
     dilitiumText: Label = null;
     
+    @property(Label)
+    lunarText: Label = null;
+    
     @property(MiningPanelController)
     miningPanelController: MiningPanelController = null;
+    
+    @property(TraderPanelController)
+    traderPanelController: TraderPanelController = null;
 
     @property(AudioSource)
     audioSource: AudioSource = null;
@@ -33,6 +40,7 @@ export class GamePanelController extends Component {
     gamePanelContent: Node = null;  // This should reference the main content of your game panel
 
     private dilitium: number = 0;
+    private lunar: number = 0;
     private dilitiumPerClick: number = 1;
     private passiveTimer: number = 0;
     
@@ -47,6 +55,7 @@ export class GamePanelController extends Component {
         }
         
         this.updateDilitiumText();
+        this.updateLunarText();
         
         // Make sure trader panel is initially hidden
         if (this.traderPanel) {
@@ -73,30 +82,55 @@ export class GamePanelController extends Component {
             this.dilitiumText.string = this.formatNumber(this.dilitium);
         }
     }
+    
+    updateLunarText() {
+        if (this.lunarText) {
+            this.lunarText.string = this.formatNumber(this.lunar);
+        }
+    }
 
     update(dt: number) {
-        // Обрабатываем пассивный доход независимо от активности MiningPanel
+        // Обрабатываем пассивный доход независимо от активности MiningPanel и TraderPanel
         this.processPassiveIncome(dt);
     }
     
     processPassiveIncome(dt: number) {
         this.passiveTimer += dt;
         if (this.passiveTimer >= 1) { // раз в секунду
+            // Process mining passive income
             if (this.miningPanelController) {
-                let totalIncome = 0;
-                const upgrades = this.miningPanelController.getUpgrades();
+                let totalDilitiumIncome = 0;
+                const miningUpgrades = this.miningPanelController.getUpgrades();
                 
-                for (const upg of upgrades) {
+                for (const upg of miningUpgrades) {
                     if (upg.passiveIncome) {
-                        totalIncome += upg.passiveIncome * upg.level;
+                        totalDilitiumIncome += upg.passiveIncome * upg.level;
                     }
                 }
                 
-                if (totalIncome > 0) {
-                    this.dilitium += totalIncome;
+                if (totalDilitiumIncome > 0) {
+                    this.dilitium += totalDilitiumIncome;
                     this.updateDilitiumText();
                 }
             }
+            
+            // Process trader passive income for lunars
+            if (this.traderPanelController) {
+                let totalLunarIncome = 0;
+                const traderUpgrades = this.traderPanelController.getUpgrades();
+                
+                for (const upg of traderUpgrades) {
+                    if (upg.passiveIncome) {
+                        totalLunarIncome += upg.passiveIncome * upg.level;
+                    }
+                }
+                
+                if (totalLunarIncome > 0) {
+                    this.lunar += totalLunarIncome;
+                    this.updateLunarText();
+                }
+            }
+            
             this.passiveTimer = 0;
         }
     }
@@ -109,6 +143,15 @@ export class GamePanelController extends Component {
     public setDilitium(value: number) {
         this.dilitium = value;
         this.updateDilitiumText();
+    }
+    
+    public getLunar(): number {
+        return this.lunar;
+    }
+    
+    public setLunar(value: number) {
+        this.lunar = value;
+        this.updateLunarText();
     }
     
     public getDilitiumPerClick(): number {
