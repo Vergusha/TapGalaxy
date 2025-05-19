@@ -2,7 +2,7 @@ import { _decorator, Component, Node, director, game, Game } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
 import { UIManager } from './UIManager';
 import { SaveManager } from './SaveManager';
-import { NotificationManager } from './NotificationManager';
+// Removed NotificationManager import
 const { ccclass, property } = _decorator;
 
 // Define the types for our upgrades to be used by the SaveManager
@@ -72,18 +72,12 @@ export class GameManager extends Component {
         const saveManager = SaveManager.getInstance();
         if (saveManager.hasSaveData()) {
             if (saveManager.loadGame()) {
-                // Get notification manager and show welcome back notification
-                const notificationManager = NotificationManager.getInstance();
-                if (notificationManager) {
-                    notificationManager.showInfoNotification("Добро пожаловать в Tap Galaxy!", 3);
-                }
+                // Log welcome back message instead of notification
+                console.log("Добро пожаловать в Tap Galaxy!");
             }
         } else {
-            // Show welcome notification for new players
-            const notificationManager = NotificationManager.getInstance();
-            if (notificationManager) {
-                notificationManager.showSuccessNotification("Добро пожаловать в Tap Galaxy! Нажимайте на планету, чтобы добывать дилитий.", 5);
-            }
+            // Log welcome message for new players instead of notification
+            console.log("Добро пожаловать в Tap Galaxy! Нажимайте на планету, чтобы добывать дилитий.");
         }
     }
 
@@ -148,36 +142,33 @@ export class GameManager extends Component {
             this.currencyManager.addQuark(offlineQuark);
         }
         
-        // Show notification about offline earnings
-        const notificationManager = NotificationManager.getInstance();
-        if (notificationManager) {
-            const minutes = Math.floor(offlineSeconds / 60);
-            const hours = Math.floor(minutes / 60);
-            let timeAwayText = '';
-            
-            if (hours > 0) {
-                timeAwayText = `${hours} ч ${minutes % 60} мин`;
-            } else {
-                timeAwayText = `${minutes} мин`;
-            }
-            
-            // Format a message about earnings
-            let earningsMessage = `Пока вас не было (${timeAwayText}):\n`;
-            if (offlineDilithium > 0) {
-                earningsMessage += `+${this.currencyManager.formatNumber(offlineDilithium)} дилития\n`;
-            }
-            if (offlineLunar > 0) {
-                earningsMessage += `+${this.currencyManager.formatNumber(offlineLunar)} лунария\n`;
-            }
-            if (offlineXenobit > 0) {
-                earningsMessage += `+${this.currencyManager.formatNumber(offlineXenobit)} ксенобитов\n`;
-            }
-            if (offlineQuark > 0) {
-                earningsMessage += `+${this.currencyManager.formatNumber(offlineQuark)} кварков`;
-            }
-            
-            notificationManager.showSuccessNotification(earningsMessage, 5);
+        // Log about offline earnings instead of showing notification
+        const minutes = Math.floor(offlineSeconds / 60);
+        const hours = Math.floor(minutes / 60);
+        let timeAwayText = '';
+        
+        if (hours > 0) {
+            timeAwayText = `${hours} ч ${minutes % 60} мин`;
+        } else {
+            timeAwayText = `${minutes} мин`;
         }
+        
+        // Format a message about earnings
+        let earningsMessage = `Пока вас не было (${timeAwayText}):\n`;
+        if (offlineDilithium > 0) {
+            earningsMessage += `+${this.currencyManager.formatNumber(offlineDilithium)} дилития\n`;
+        }
+        if (offlineLunar > 0) {
+            earningsMessage += `+${this.currencyManager.formatNumber(offlineLunar)} лунария\n`;
+        }
+        if (offlineXenobit > 0) {
+            earningsMessage += `+${this.currencyManager.formatNumber(offlineXenobit)} ксенобитов\n`;
+        }
+        if (offlineQuark > 0) {
+            earningsMessage += `+${this.currencyManager.formatNumber(offlineQuark)} кварков`;
+        }
+        
+        console.log(earningsMessage);
     }
     
     // Save the game

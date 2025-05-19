@@ -2,7 +2,6 @@ import { _decorator, Component, Node, Button } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
 import { UIEvents } from './UIManager';
 import { AudioManager } from './AudioManager';
-import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('GamePanelController')
@@ -81,12 +80,9 @@ export class GamePanelController extends Component {
                 audioManager.playResourceGain();
             }
             
-            // Occasionally show a notification
+            // Occasionally log resource gain instead of showing a notification
             if (Math.random() < 0.05) { // 5% chance
-                const notificationManager = NotificationManager.getInstance();
-                if (notificationManager) {
-                    notificationManager.showInfoNotification(`+${this.currencyManager.formatNumber(amount)} дилития!`, 1.5);
-                }
+                console.log(`+${this.currencyManager.formatNumber(amount)} дилития!`);
             }
         }
     }

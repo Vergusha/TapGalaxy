@@ -3,7 +3,6 @@ import { CurrencyManager } from './CurrencyManager';
 import { UIEvents } from './UIManager';
 import { GameManager } from './GameManager';
 import { AudioManager } from './AudioManager';
-import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 // Define the trader upgrade type
@@ -166,7 +165,6 @@ export class TraderPanelController extends Component {
         const currentDilithium = this.currencyManager.getDilithium();
         
         const audioManager = AudioManager.getInstance();
-        const notificationManager = NotificationManager.getInstance();
         
         if (currentDilithium >= upgrade.dilithiumCost) {
             // Deduct the dilithium cost
@@ -180,13 +178,8 @@ export class TraderPanelController extends Component {
                 audioManager.playPurchaseSuccess();
             }
             
-            // Show success notification
-            if (notificationManager) {
-                notificationManager.showSuccessNotification(
-                    `Обмен успешен! Получено +${upgrade.lunarReward} лунария`,
-                    2
-                );
-            }
+            // Log success message instead of notification
+            console.log(`Обмен успешен! Получено +${upgrade.lunarReward} лунария`);
             
             // For first purchase, level up and apply passive income
             if (upgrade.level === 0) {
@@ -197,13 +190,8 @@ export class TraderPanelController extends Component {
                     const newPassiveIncome = this.currencyManager.getPassiveLunar() + upgrade.passiveIncome;
                     this.currencyManager.setPassiveLunar(newPassiveIncome);
                     
-                    // Special notification for passive income unlock
-                    if (notificationManager) {
-                        notificationManager.showInfoNotification(
-                            `Открыт пассивный доход лунария: +${upgrade.passiveIncome} в секунду!`,
-                            3
-                        );
-                    }
+                    // Log passive income information instead of notification
+                    console.log(`Открыт пассивный доход лунария: +${upgrade.passiveIncome} в секунду!`);
                 }
                 
                 // Update level label
@@ -221,13 +209,8 @@ export class TraderPanelController extends Component {
                 audioManager.playPurchaseFail();
             }
             
-            // Show notification
-            if (notificationManager) {
-                notificationManager.showWarningNotification(
-                    "Недостаточно дилития для обмена!",
-                    2
-                );
-            }
+            // Log error message instead of notification
+            console.log("Недостаточно дилития для обмена!");
         }
     }
     

@@ -3,7 +3,6 @@ import { CurrencyManager } from './CurrencyManager';
 import { UIEvents } from './UIManager';
 import { GameManager } from './GameManager';
 import { AudioManager } from './AudioManager';
-import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 // Define the upgrade type
@@ -164,7 +163,6 @@ export class MiningPanelController extends Component {
         const currentDilithium = this.currencyManager.getDilithium();
         
         const audioManager = AudioManager.getInstance();
-        const notificationManager = NotificationManager.getInstance();
         
         if (currentDilithium >= upgrade.cost) {
             // Deduct the cost
@@ -201,26 +199,16 @@ export class MiningPanelController extends Component {
                 audioManager.playPurchaseSuccess();
             }
             
-            // Show notification
-            if (notificationManager) {
-                notificationManager.showSuccessNotification(
-                    `Улучшение "${upgrade.name}" приобретено! (Уровень ${upgrade.level})`, 
-                    2
-                );
-            }
+            // Log success message instead of notification
+            console.log(`Улучшение "${upgrade.name}" приобретено! (Уровень ${upgrade.level})`);
         } else {
             // Not enough resources
             if (audioManager) {
                 audioManager.playPurchaseFail();
             }
             
-            // Show notification
-            if (notificationManager) {
-                notificationManager.showWarningNotification(
-                    "Недостаточно дилития для покупки улучшения!",
-                    2
-                );
-            }
+            // Log error message instead of notification
+            console.log("Недостаточно дилития для покупки улучшения!");
         }
     }
     

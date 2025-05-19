@@ -3,7 +3,6 @@ import { UIEvents } from './UIManager';
 import { GameManager } from './GameManager';
 import { SaveManager } from './SaveManager';
 import { AudioManager } from './AudioManager';
-import { NotificationManager } from './NotificationManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('SettingsPanelController')
@@ -112,15 +111,14 @@ export class SettingsPanelController extends Component {
     private onNotificationsToggle(toggle: Toggle) {
         const enabled = toggle.isChecked;
         
-        // Apply notification setting
-        const notificationManager = NotificationManager.getInstance();
-        if (notificationManager) {
-            notificationManager.setNotificationsEnabled(enabled);
-            
-            // Show a test notification if enabled
-            if (enabled) {
-                notificationManager.showInfoNotification("Уведомления включены", 2);
-            }
+        // Just log the notification setting change
+        console.log(`Notifications ${enabled ? 'enabled' : 'disabled'}`);
+        
+        // Save notification preference to localStorage directly
+        try {
+            localStorage.setItem('tap_galaxy_notifications_enabled', String(enabled));
+        } catch (e) {
+            console.error('Failed to save notification preference:', e);
         }
     }
       // Load functions
@@ -158,12 +156,11 @@ export class SettingsPanelController extends Component {
     
     private loadNotificationPreference() {
         try {
-            // Get notification preference from NotificationManager
-            const notificationManager = NotificationManager.getInstance();
-            if (notificationManager) {
-                const enabled = notificationManager.areNotificationsEnabled();
-                this.notificationsToggle.isChecked = enabled;
-            }        } catch (e) {
+            // Get notification preference from localStorage directly
+            const savedPref = localStorage.getItem('tap_galaxy_notifications_enabled');
+            const enabled = savedPref === null ? true : savedPref === 'true';
+            this.notificationsToggle.isChecked = enabled;
+        } catch (e) {
             console.error('Failed to load notification preference:', e);
         }
     }
