@@ -25,9 +25,6 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 12
-      },
-      {
         "__id__": 14
       },
       {
@@ -43,7 +40,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 8,
+      "y": 0,
       "z": 0
     },
     "_lrot": {
@@ -91,10 +88,13 @@
       },
       {
         "__id__": 9
+      },
+      {
+        "__id__": 11
       }
     ],
     "_prefab": {
-      "__id__": 11
+      "__id__": 13
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -291,6 +291,24 @@
     "fileId": "1eHjyxXjJFHoHir1vl/cWj"
   },
   {
+    "__type__": "4aabau1a8BL6rwQSywUnH8Z",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 2
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 12
+    },
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "10j9qTvbZEf5J+lFXhjHJg"
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -313,7 +331,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 13
+      "__id__": 15
     },
     "_customMaterial": null,
     "_srcBlendFactor": 2,
@@ -325,10 +343,13 @@
       "b": 255,
       "a": 255
     },
-    "_spriteFrame": null,
+    "_spriteFrame": {
+      "__uuid__": "45e08334-3967-425c-8327-6838c376623d@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
     "_type": 0,
     "_fillType": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
       "x": 0,
@@ -355,12 +376,12 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 15
+      "__id__": 17
     },
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 1080,
-      "height": 1648
+      "height": 1920
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -383,7 +404,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 17
+      "__id__": 19
     },
     "_alignFlags": 18,
     "_target": null,
@@ -392,7 +413,7 @@
     "_top": 0,
     "_bottom": 0,
     "_horizontalCenter": 0,
-    "_verticalCenter": 8,
+    "_verticalCenter": 0,
     "_isAbsLeft": true,
     "_isAbsRight": true,
     "_isAbsTop": true,
@@ -408,30 +429,6 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "b03aYTrZ1DW6zMZnKtMLm2"
-  },
-  {
-    "__type__": "611180S4TVK+IHnFN/gm/3x",
-    "_name": "",
-    "_objFlags": 0,
-    "__editorExtras__": {},
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "__prefab": {
-      "__id__": 19
-    },
-    "planetNode": null,
-    "traderNode": null,
-    "gameButton": null,
-    "miningButton": null,
-    "spaceshipButton": null,
-    "shopButton": null,
-    "_id": ""
-  },
-  {
-    "__type__": "cc.CompPrefabInfo",
-    "fileId": "4ax52pz0dOp76xAxvpzGEA"
   },
   {
     "__type__": "cc.PrefabInfo",

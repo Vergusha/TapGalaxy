@@ -44,10 +44,13 @@
       },
       {
         "__id__": 88
+      },
+      {
+        "__id__": 90
       }
     ],
     "_prefab": {
-      "__id__": 90
+      "__id__": 92
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -2118,6 +2121,27 @@
     "fileId": "adxiFgoR1Piq5L+0UhdmMD"
   },
   {
+    "__type__": "9c844rxlj1HD59tyKDDaNpP",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 91
+    },
+    "dilithiumLabel": {
+      "__id__": 6
+    },
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "eeseetQWRIA4ZxgnMDMsPt"
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -2126,6 +2150,7 @@
       "__id__": 0
     },
     "fileId": "a6/EbyiPBGvqTcDCHUv6p/",
+    "instance": null,
     "targetOverrides": null
   }
 ]
