@@ -44,10 +44,13 @@
       },
       {
         "__id__": 96
+      },
+      {
+        "__id__": 98
       }
     ],
     "_prefab": {
-      "__id__": 98
+      "__id__": 100
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -2396,6 +2399,31 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "59WvunuthIqIbYxjUotG03"
+  },
+  {
+    "__type__": "668e2a5mXdOzY0GXJnKYufi",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 99
+    },
+    "gameButton": {
+      "__id__": 2
+    },
+    "miningPanelPrefab": {
+      "__uuid__": "5fbc580e-4585-46fb-a984-e248163e6979",
+      "__expectedType__": "cc.Prefab"
+    },
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "95Uvi0Hc5AqbUDj7nayoFB"
   },
   {
     "__type__": "cc.PrefabInfo",
