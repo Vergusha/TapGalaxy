@@ -31,7 +31,10 @@ export class MiningPanelController extends Component {
     currencyIconSprite: Sprite = null;
 
     @property(Button)
-    closeButton: Button = null;    private currencyManager: CurrencyManager = null;
+    closeButton: Button = null;
+    
+    @property(Button)
+    backButton: Button = null;private currencyManager: CurrencyManager = null;
     private gameManager: GameManager = null;
     
     // Array of available mining upgrades
@@ -81,7 +84,31 @@ export class MiningPanelController extends Component {
             description: '+500 per click, +100 passive income'
         }
     ];    onLoad() {
-        // Initialize
+        // Initialize and find components in the prefab if not assigned
+        if (!this.upgradesContainer) {
+            const contentView = this.node.getChildByName('ScrollView')?.getChildByName('view')?.getChildByName('content');
+            if (contentView) {
+                this.upgradesContainer = contentView;
+            } else {
+                console.error('Could not find content container in MiningPanel prefab');
+            }
+        }
+        
+        if (!this.scrollView) {
+            this.scrollView = this.node.getChildByName('ScrollView')?.getComponent(ScrollView);
+        }
+        
+        if (!this.currencyIconSprite) {
+            this.currencyIconSprite = this.node.getChildByName('CurrencyIcon')?.getComponent(Sprite);
+        }
+        
+        if (!this.closeButton) {
+            this.closeButton = this.node.getChildByName('CloseButton')?.getComponent(Button);
+        }
+        
+        if (!this.backButton) {
+            this.backButton = this.node.getChildByName('BackButton')?.getComponent(Button);
+        }
     }
     
     start() {
@@ -95,6 +122,17 @@ export class MiningPanelController extends Component {
         } else {
             // Store initial upgrades in GameManager
             this.gameManager.setMiningUpgrades(this.upgrades);
+        }
+        
+        // Ensure we have needed components
+        if (!this.upgradesContainer) {
+            console.error('Upgrades container not found in MiningPanel prefab');
+            return;
+        }
+        
+        if (!this.upgradeItemPrefab) {
+            console.error('Upgrade item prefab not assigned in MiningPanelController');
+            return;
         }
         
         // Clear the container before adding new items
@@ -111,6 +149,13 @@ export class MiningPanelController extends Component {
         // Set up close button if it exists
         if (this.closeButton) {
             this.closeButton.node.on(Button.EventType.CLICK, this.onCloseButtonClick, this);
+        }
+        
+        // Set up back button if it exists
+        if (this.backButton) {
+            this.backButton.node.on(Button.EventType.CLICK, () => {
+                UIEvents.emit('showGamePanel');
+            }, this);
         }
     }
 

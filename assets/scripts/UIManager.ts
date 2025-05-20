@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Prefab, resources, instantiate, find, director } from 'cc';
 const { ccclass, property } = _decorator;
 
 // Event system for UI-related events
@@ -33,29 +33,47 @@ export class UIEvents {
 
 @ccclass('UIManager')
 export class UIManager extends Component {
-    @property(Node)
+    @property({
+        type: Node,
+        tooltip: 'Панель с игровым экраном'
+    })
     gamePanel: Node = null;
-
-    @property(Node)
+    
+    @property({
+        type: Node,
+        tooltip: 'Панель майнинга/апгрейдов'
+    })
     miningPanel: Node = null;
-
-    @property(Node)
+    
+    @property({
+        type: Node,
+        tooltip: 'Панель космического корабля'
+    })
     spaceshipPanel: Node = null;
-
-    @property(Node)
+    
+    @property({
+        type: Node,
+        tooltip: 'Панель магазина'
+    })
     shopPanel: Node = null;
-
-    @property(Node)
+    
+    @property({
+        type: Node,
+        tooltip: 'Панель настроек'
+    })
     settingsPanel: Node = null;
-
-    @property(Node)
+    
+    @property({
+        type: Node,
+        tooltip: 'Панель торговца'
+    })
     traderPanel: Node = null;
-
+    
     private static _instance: UIManager = null;
     
     // Keep track of which panel is currently active
     private currentPanel: Node = null;
-
+    
     onLoad() {
         // Create a singleton instance
         if (UIManager._instance !== null) {
@@ -63,6 +81,12 @@ export class UIManager extends Component {
             return;
         }
         UIManager._instance = this;
+        
+        // Находим все панели из префабов в сцене, если они не назначены через редактор
+        this.findPanelsInScene();
+        
+        // Устанавливаем начальную видимость панелей
+        this.setupInitialPanelVisibility();
         
         // Register event listeners
         UIEvents.on('showGamePanel', this.showGamePanel, this);
@@ -77,6 +101,62 @@ export class UIManager extends Component {
         UIEvents.on('showTraderPanel', this.showTraderPanel, this);
         UIEvents.on('hideTraderPanel', this.hideTraderPanel, this);
         UIEvents.on('toggleTraderPanel', this.toggleTraderPanel, this);
+    }
+    
+    // Метод для настройки начальной видимости панелей
+    private setupInitialPanelVisibility() {
+        // Сначала скрываем все панели
+        if (this.gamePanel) this.gamePanel.active = false;
+        if (this.miningPanel) this.miningPanel.active = false;
+        if (this.spaceshipPanel) this.spaceshipPanel.active = false;
+        if (this.shopPanel) this.shopPanel.active = false;
+        if (this.settingsPanel) this.settingsPanel.active = false;
+        if (this.traderPanel) this.traderPanel.active = false;
+        
+        // GamePanel будет показана в start() методе
+    }
+    
+    // Метод для поиска панелей в сцене на основе имен префабов
+    private findPanelsInScene() {
+        // Находим canvas как основной родительский элемент
+        const canvas = find('Canvas');
+        if (!canvas) {
+            console.error('Canvas not found in scene');
+            return;
+        }
+        
+        // Находим панели только если они не были назначены через редактор
+        if (!this.gamePanel) {
+            this.gamePanel = canvas.getChildByName('GamePanel');
+        }
+        
+        if (!this.miningPanel) {
+            this.miningPanel = find('Canvas/MiningPanel') || canvas.getChildByName('MiningPanel');
+        }
+        
+        if (!this.shopPanel) {
+            this.shopPanel = find('Canvas/ShopPanel') || canvas.getChildByName('ShopPanel');
+        }
+        
+        if (!this.settingsPanel) {
+            this.settingsPanel = find('Canvas/SettingsPanel') || canvas.getChildByName('SettingsPanel');
+        }
+        
+        if (!this.traderPanel) {
+            this.traderPanel = find('Canvas/TraderPanel') || canvas.getChildByName('TraderPanel');
+        }
+        
+        if (!this.spaceshipPanel) {
+            this.spaceshipPanel = find('Canvas/SpaceshipPanel') || canvas.getChildByName('SpaceshipPanel');
+        }
+        
+        // Логируем, если какая-либо панель не найдена
+        if (!this.gamePanel) console.warn('GamePanel prefab not found in scene');
+        if (!this.miningPanel) console.warn('MiningPanel prefab not found in scene');
+        if (!this.shopPanel) console.warn('ShopPanel prefab not found in scene');
+        if (!this.settingsPanel) console.warn('SettingsPanel prefab not found in scene');
+        if (!this.traderPanel) console.warn('TraderPanel prefab not found in scene');
+        if (!this.spaceshipPanel) console.warn('SpaceshipPanel prefab not found in scene');
     }
 
     onDestroy() {

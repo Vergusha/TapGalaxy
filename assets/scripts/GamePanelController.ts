@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button } from 'cc';
+import { _decorator, Component, Node, Button, find } from 'cc';
 import { CurrencyManager } from './CurrencyManager';
 import { UIEvents } from './UIManager';
 import { AudioManager } from './AudioManager';
@@ -8,19 +8,19 @@ const { ccclass, property } = _decorator;
 export class GamePanelController extends Component {
     @property(Node)
     planetNode: Node = null;
-
+    
     @property(Node)
     traderNode: Node = null;
-
+    
     @property(Button)
     gameButton: Button = null;
-
+    
     @property(Button)
     miningButton: Button = null;
-
+    
     @property(Button)
     spaceshipButton: Button = null;
-
+    
     @property(Button)
     shopButton: Button = null;
 
@@ -29,14 +29,56 @@ export class GamePanelController extends Component {
     start() {
         this.currencyManager = CurrencyManager.getInstance();
         
+        // Находим компоненты в префабе, если они не были назначены в редакторе
+        if (!this.planetNode) {
+            this.planetNode = this.node.getChildByName('Planet');
+        }
+        
+        if (!this.traderNode) {
+            this.traderNode = this.node.getChildByName('Trader');
+        }
+        
+        // Find buttons if not assigned
+        if (!this.gameButton) {
+            const navBar = this.node.parent.getChildByName('BottomPanel');
+            if (navBar) {
+                this.gameButton = navBar.getChildByName('GameButton')?.getComponent(Button);
+            }
+        }
+        
+        if (!this.miningButton) {
+            const navBar = this.node.parent.getChildByName('BottomPanel');
+            if (navBar) {
+                this.miningButton = navBar.getChildByName('MiningButton')?.getComponent(Button);
+            }
+        }
+        
+        if (!this.spaceshipButton) {
+            const navBar = this.node.parent.getChildByName('BottomPanel');
+            if (navBar) {
+                this.spaceshipButton = navBar.getChildByName('SpaceshipButton')?.getComponent(Button);
+            }
+        }
+        
+        if (!this.shopButton) {
+            const navBar = this.node.parent.getChildByName('BottomPanel');
+            if (navBar) {
+                this.shopButton = navBar.getChildByName('ShopButton')?.getComponent(Button);
+            }
+        }
+        
         // Set up planet click
         if (this.planetNode) {
             this.planetNode.on(Node.EventType.TOUCH_END, this.onPlanetClick, this);
+        } else {
+            console.error('Planet node not found in GamePanel prefab');
         }
         
         // Set up trader click
         if (this.traderNode) {
             this.traderNode.on(Node.EventType.TOUCH_END, this.onTraderClick, this);
+        } else {
+            console.warn('Trader node not found in GamePanel prefab');
         }
         
         // Set up panel navigation buttons
