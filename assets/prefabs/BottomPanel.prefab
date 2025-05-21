@@ -2415,8 +2415,15 @@
     "miningButton": {
       "__id__": 24
     },
+    "spaceshipButton": {
+      "__id__": 46
+    },
     "miningPanelPrefab": {
       "__uuid__": "5fbc580e-4585-46fb-a984-e248163e6979",
+      "__expectedType__": "cc.Prefab"
+    },
+    "spaceshipPanelPrefab": {
+      "__uuid__": "ea13749b-7904-4996-9f96-c02d1d0b6df7",
       "__expectedType__": "cc.Prefab"
     },
     "_id": ""
