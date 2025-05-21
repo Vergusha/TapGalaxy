@@ -2,7 +2,7 @@
   "ver": "1.0.27",
   "importer": "image",
   "imported": true,
-  "uuid": "7a0f3c6a-c899-4e90-ad4c-12367cc3e3c3",
+  "uuid": "2f1fdbc3-dade-4716-9de1-4257235da61d",
   "files": [
     ".json",
     ".png"
@@ -10,14 +10,14 @@
   "subMetas": {
     "6c48a": {
       "importer": "texture",
-      "uuid": "7a0f3c6a-c899-4e90-ad4c-12367cc3e3c3@6c48a",
-      "displayName": "auto_miner",
+      "uuid": "2f1fdbc3-dade-4716-9de1-4257235da61d@6c48a",
+      "displayName": "lunar_extractor_mk2",
       "id": "6c48a",
       "name": "texture",
       "userData": {
         "wrapModeS": "clamp-to-edge",
         "wrapModeT": "clamp-to-edge",
-        "imageUuidOrDatabaseUri": "7a0f3c6a-c899-4e90-ad4c-12367cc3e3c3",
+        "imageUuidOrDatabaseUri": "2f1fdbc3-dade-4716-9de1-4257235da61d",
         "isUuid": true,
         "visible": false,
         "minfilter": "nearest",
@@ -34,8 +34,8 @@
     },
     "f9941": {
       "importer": "sprite-frame",
-      "uuid": "7a0f3c6a-c899-4e90-ad4c-12367cc3e3c3@f9941",
-      "displayName": "auto_miner",
+      "uuid": "2f1fdbc3-dade-4716-9de1-4257235da61d@f9941",
+      "displayName": "lunar_extractor_mk2",
       "id": "f9941",
       "name": "spriteFrame",
       "userData": {
@@ -113,7 +113,7 @@
           ]
         },
         "isUuid": true,
-        "imageUuidOrDatabaseUri": "7a0f3c6a-c899-4e90-ad4c-12367cc3e3c3@6c48a",
+        "imageUuidOrDatabaseUri": "2f1fdbc3-dade-4716-9de1-4257235da61d@6c48a",
         "atlasUuid": "",
         "trimType": "auto"
       },
@@ -129,6 +129,6 @@
     "type": "sprite-frame",
     "hasAlpha": true,
     "fixAlphaTransparencyArtifacts": false,
-    "redirect": "7a0f3c6a-c899-4e90-ad4c-12367cc3e3c3@6c48a"
+    "redirect": "2f1fdbc3-dade-4716-9de1-4257235da61d@6c48a"
   }
 }

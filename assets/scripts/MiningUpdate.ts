@@ -9,8 +9,8 @@ export type UpgradeData = {
     icon: string;
     cost: number;
     description: string;
-    clickPowerBonus?: number;
-    passiveIncomeBonus?: number;
+    dilithiumBonus?: number;       // Changed from dilithiumPerClick to match MiningPanel
+    passiveIncomeBonus?: number;   // This stays the same
 };
 
 @ccclass('MiningUpdate')
@@ -72,26 +72,16 @@ export class MiningUpdate extends Component {
         }
 
         if (this.topPanel.getDilithium() >= this.upgradeData.cost) {
-            this.topPanel.addDilithium(-this.upgradeData.cost);
+            this.topPanel.spendDilithium(this.upgradeData.cost);
             console.log(`Куплено улучшение: ${this.upgradeData.name}, уровень ${this.upgradeData.level + 1}`);
 
-            if (this.isFirstUpgradeType) {
-                // Убедись, что clickPowerBonus существует и является числом
-                if (typeof this.upgradeData.clickPowerBonus === 'number') {
-                    this.topPanel.increaseClickPower(this.upgradeData.clickPowerBonus);
-                } else {
-                    // Если бонус не определен, можно использовать значение по умолчанию или вывести ошибку
-                    console.warn(`MiningUpdate: clickPowerBonus for ${this.upgradeData.name} is not defined, using default +2`);
-                    this.topPanel.increaseClickPower(2); // Пример значения по умолчанию
-                }
-            } else {
-                // Логика для других улучшений
-                if (typeof this.upgradeData.clickPowerBonus === 'number') {
-                    this.topPanel.increaseClickPower(this.upgradeData.clickPowerBonus);
-                }
-                if (typeof this.upgradeData.passiveIncomeBonus === 'number') {
-                    this.topPanel.addPassiveIncomeRate(this.upgradeData.passiveIncomeBonus);
-                }
+            // Changed to match property name in UpgradeData
+            if (typeof this.upgradeData.dilithiumBonus === 'number') {
+                this.topPanel.increaseDilithiumPerClick(this.upgradeData.dilithiumBonus);
+            }
+            
+            if (typeof this.upgradeData.passiveIncomeBonus === 'number') {
+                this.topPanel.addPassiveDilithiumIncome(this.upgradeData.passiveIncomeBonus);
             }
 
             this.upgradeData.level++;

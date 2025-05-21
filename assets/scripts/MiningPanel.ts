@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, find } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, find, director } from 'cc';
 import { MiningUpdate, UpgradeData } from './MiningUpdate'; // Импортируем UpgradeData из MiningUpdate
 import { TopPanel } from './TopPanel';
 const { ccclass, property } = _decorator;
@@ -14,40 +14,39 @@ export class MiningPanel extends Component {
     @property({ type: Node })
     closeButton: Node = null;
 
-    private topPanelComponent: TopPanel | null = null;
+    private topPanelComponent: TopPanel | null = null; // Убираем @property
 
     // Делаем массив улучшений статическим и инициализируем его один раз
     private static upgrades: UpgradeData[] = MiningPanel.initializeUpgradesData();
 
     // Статический метод для инициализации данных улучшений
     private static initializeUpgradesData(): UpgradeData[] {
-        // Этот код выполнится только один раз при первой загрузке класса MiningPanel
         console.log("Initializing default upgrades data for MiningPanel.");
         return [
             {
                 name: 'Drill Power',
                 level: 0,
-                icon: 'icons/drill_power', // Изменено
+                icon: 'icons/drill_power',
                 cost: 100,
-                description: 'Увеличивает силу вашего клика.',
-                clickPowerBonus: 2
+                description: 'Увеличивает добычу дилития за клик.',
+                dilithiumBonus: 2 // Бонус к добыче дилития за клик
             },
             {
                 name: 'Auto Miner',
                 level: 0,
-                icon: 'icons/auto_miner', // Изменено
+                icon: 'icons/auto_miner',
                 cost: 250,
-                description: 'Увеличивает силу клика и пассивный доход.',
-                clickPowerBonus: 1,
+                description: 'Увеличивает добычу и пассивный доход дилития.',
+                dilithiumBonus: 1,
                 passiveIncomeBonus: 0.5
             },
             {
                 name: 'Advanced Tech',
                 level: 0,
-                icon: 'icons/storage', // Изменено
+                icon: 'icons/storage',
                 cost: 500,
-                description: 'Значительно улучшает клик и пассивный доход.',
-                clickPowerBonus: 3,
+                description: 'Значительно улучшает добычу и пассивный доход дилития.',
+                dilithiumBonus: 3,
                 passiveIncomeBonus: 1
             }
         ];
@@ -60,30 +59,36 @@ export class MiningPanel extends Component {
         // После сброса нужно будет обновить UI, если панель открыта
     }
 
+    setTopPanel(topPanel: TopPanel) {
+        this.topPanelComponent = topPanel;
+        this.spawnUpgrades();
+    }
+
     onLoad() {
-        const topPanelNodeInstance = find("Canvas/TopPanel");
-
-        if (topPanelNodeInstance) {
-            this.topPanelComponent = topPanelNodeInstance.getComponent(TopPanel);
-            if (!this.topPanelComponent) {
-                console.error("MiningPanel: Компонент TopPanel не найден на узле.");
-            }
-        } else {
-            console.error("MiningPanel: Узел TopPanel не найден. Убедитесь, что экземпляр префаба TopPanel существует в сцене.");
-        }
-
-        if (this.topPanelComponent) {
-            this.spawnUpgrades();
-        } else {
-            console.error("MiningPanel: Невозможно создать улучшения, так как компонент TopPanel недоступен.");
-        }
-
-        // Добавлено для кнопки закрытия
         if (this.closeButton) {
             this.closeButton.on(Node.EventType.MOUSE_DOWN, this.closePanel, this);
         } else {
             console.warn("MiningPanel: CloseButton не назначен в инспекторе.");
         }
+    }
+
+    onEnable() {
+        // Only search for TopPanel if it hasn't been set yet
+        if (!this.topPanelComponent) {
+            const topPanelNode = find('Canvas/TopPanel');
+            if (topPanelNode) {
+                this.topPanelComponent = topPanelNode.getComponent(TopPanel);
+                if (!this.topPanelComponent) {
+                    console.error("MiningPanel: Компонент TopPanel не найден на узле.");
+                    return;
+                }
+            } else {
+                console.error("MiningPanel: Узел TopPanel не найден. Убедитесь, что экземпляр префаба TopPanel существует в сцене.");
+                return;
+            }
+        }
+        
+        this.spawnUpgrades();
     }
 
     spawnUpgrades() {
