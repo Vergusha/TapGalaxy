@@ -50,7 +50,7 @@ export class MiningUpdate extends Component {
 
         resources.load(data.icon + '/spriteFrame', SpriteFrame, (err, spriteFrame) => {
             if (!err && spriteFrame && this.IconSprite) {
-                this.IconSprite.spriteFrame = spriteFrame;
+                this.IconSprite.spriteFrame = spriteFrame; // <--- Вот здесь присвоение
             } else if (err) {
                 console.error(`Failed to load icon ${data.icon}:`, err);
             }

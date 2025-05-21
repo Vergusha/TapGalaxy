@@ -505,7 +505,7 @@
     "_spriteFrame": null,
     "_type": 0,
     "_fillType": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
       "x": 0,
@@ -520,7 +520,7 @@
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "dfX3U4ZoBB6IQELQyyqd3r"
+    "fileId": "14s637YblHUo8GrOer6A0H"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -1177,9 +1177,7 @@
     "LevelLabel": {
       "__id__": 11
     },
-    "IconSprite": {
-      "__id__": 17
-    },
+    "IconSprite": null,
     "CostLabel": {
       "__id__": 23
     },

@@ -1229,6 +1229,7 @@
     "__type__": "8bbc5mCWshCnbnUJ9aIZkVT",
     "_name": "",
     "_objFlags": 0,
+    "__editorExtras__": {},
     "node": {
       "__id__": 1
     },
@@ -1243,7 +1244,10 @@
     "content": {
       "__id__": 14
     },
-    "_id": "0dijN2eWVCW7EW2Kd/dabV"
+    "closeButton": {
+      "__id__": 3
+    },
+    "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",

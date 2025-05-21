@@ -14,7 +14,7 @@ export class Planet extends Component {
         if (topPanelNode) {
             const topPanel = topPanelNode.getComponent(TopPanel);
             if (topPanel) {
-                topPanel.addDilithium(1);
+                topPanel.performClick();
             }
         }
     }

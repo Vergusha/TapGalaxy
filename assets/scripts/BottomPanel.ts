@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('BottomPanel')
 export class BottomPanel extends Component {
     @property({ type: Node })
-    gameButton: Node = null;
+    miningButton: Node = null;
 
     @property({ type: Prefab })
     miningPanelPrefab: Prefab = null;
@@ -12,7 +12,7 @@ export class BottomPanel extends Component {
     private miningPanelInstance: Node = null;
 
     start() {
-        this.gameButton.on(Node.EventType.MOUSE_DOWN, this.toggleMiningPanel, this);
+        this.miningButton.on(Node.EventType.MOUSE_DOWN, this.toggleMiningPanel, this);
     }
 
     toggleMiningPanel() {

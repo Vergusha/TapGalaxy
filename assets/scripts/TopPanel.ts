@@ -18,7 +18,7 @@ export class TopPanel extends Component {
 
     updateDilithiumLabel() {
         if (this.dilithiumLabel) {
-            this.dilithiumLabel.string = `Dilithium: ${Math.floor(this.dilithium)}`;
+            this.dilithiumLabel.string = ` ${Math.floor(this.dilithium)}`;
         }
     }
 

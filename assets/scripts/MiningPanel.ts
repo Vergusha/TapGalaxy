@@ -3,11 +3,6 @@ import { MiningUpdate, UpgradeData } from './MiningUpdate'; // Импортир�
 import { TopPanel } from './TopPanel';
 const { ccclass, property } = _decorator;
 
-// Тип UpgradeData теперь можно взять из MiningUpdate.ts или оставить здесь,
-// но лучше импортировать, чтобы избежать дублирования.
-// Если он уже экспортирован из MiningUpdate.ts, используй импорт.
-// Если нет, экспортируй его из MiningUpdate.ts: export type UpgradeData = { ... };
-
 @ccclass('MiningPanel')
 export class MiningPanel extends Component {
     @property({ type: Prefab })
@@ -15,6 +10,9 @@ export class MiningPanel extends Component {
 
     @property({ type: Node })
     content: Node = null;
+
+    @property({ type: Node })
+    closeButton: Node = null;
 
     private topPanelComponent: TopPanel | null = null;
 
@@ -27,17 +25,17 @@ export class MiningPanel extends Component {
         console.log("Initializing default upgrades data for MiningPanel.");
         return [
             {
-                name: 'Auto Miner',
+                name: 'Drill Power',
                 level: 0,
-                icon: 'icons/auto_miner',
+                icon: 'icons/drill_power', // Изменено
                 cost: 100,
                 description: 'Увеличивает силу вашего клика.',
                 clickPowerBonus: 2
             },
             {
-                name: 'Drill Power',
+                name: 'Auto Miner',
                 level: 0,
-                icon: 'icons/drill_power',
+                icon: 'icons/auto_miner', // Изменено
                 cost: 250,
                 description: 'Увеличивает силу клика и пассивный доход.',
                 clickPowerBonus: 1,
@@ -46,7 +44,7 @@ export class MiningPanel extends Component {
             {
                 name: 'Advanced Tech',
                 level: 0,
-                icon: 'icons/storage',
+                icon: 'icons/storage', // Изменено
                 cost: 500,
                 description: 'Значительно улучшает клик и пассивный доход.',
                 clickPowerBonus: 3,
@@ -79,6 +77,13 @@ export class MiningPanel extends Component {
         } else {
             console.error("MiningPanel: Невозможно создать улучшения, так как компонент TopPanel недоступен.");
         }
+
+        // Добавлено для кнопки закрытия
+        if (this.closeButton) {
+            this.closeButton.on(Node.EventType.MOUSE_DOWN, this.closePanel, this);
+        } else {
+            console.warn("MiningPanel: CloseButton не назначен в инспекторе.");
+        }
     }
 
     spawnUpgrades() {
@@ -108,6 +113,17 @@ export class MiningPanel extends Component {
         if (this.topPanelComponent && this.content) {
              // console.log("MiningPanel onEnable: Respawning upgrades to reflect current state.");
             this.spawnUpgrades();
+        }
+    }
+
+    // Новый метод для закрытия панели
+    closePanel() {
+        if (this.node && this.node.isValid) {
+            this.node.destroy();
+            // Важно: Если BottomPanel хранит ссылку на этот экземпляр MiningPanel,
+            // эту ссылку нужно будет обнулить в BottomPanel.
+            // В вашем текущем BottomPanel.ts, miningPanelInstance обнуляется
+            // при повторном вызове toggleMiningPanel, что должно быть достаточно.
         }
     }
 }

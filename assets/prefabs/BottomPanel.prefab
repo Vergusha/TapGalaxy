@@ -2412,8 +2412,8 @@
     "__prefab": {
       "__id__": 99
     },
-    "gameButton": {
-      "__id__": 2
+    "miningButton": {
+      "__id__": 24
     },
     "miningPanelPrefab": {
       "__uuid__": "5fbc580e-4585-46fb-a984-e248163e6979",
