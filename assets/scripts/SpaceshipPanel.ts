@@ -132,4 +132,25 @@ export class SpaceshipPanel extends Component {
             upgrade.costLunar = Math.floor(upgrade.costLunar * Math.pow(1.15, newLevel));
         }
     }
+
+    // Новый метод для получения суммарных значений бонусов
+    public static getUpgradeValues() {
+        let hpBonus = 0;
+        let shieldBonus = 0;
+        let damageBonus = 0;
+
+        SpaceshipPanel.upgrades.forEach(upgrade => {
+            if (upgrade.hpBonus) {
+                hpBonus += upgrade.hpBonus * upgrade.level;
+            }
+            if (upgrade.shieldBonus) {
+                shieldBonus += upgrade.shieldBonus * upgrade.level;
+            }
+            if (upgrade.damageBonus) {
+                damageBonus += upgrade.damageBonus * upgrade.level;
+            }
+        });
+
+        return { hpBonus, shieldBonus, damageBonus };
+    }
 }
