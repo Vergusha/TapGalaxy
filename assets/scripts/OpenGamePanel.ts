@@ -29,8 +29,7 @@ export class OpenGamePanel extends Component {
         // Загружаем сохраненный прогресс
         this.loadSavedProgress(topPanel);
     }
-    
-    /**
+      /**
      * Загружает сохраненный прогресс из SaveManager
      */
     private loadSavedProgress(topPanelNode: Node) {
@@ -41,16 +40,11 @@ export class OpenGamePanel extends Component {
             // Загружаем ресурсы
             const topPanelComponent = topPanelNode.getComponent(TopPanel);
             if (topPanelComponent) {
-                // Обновляем ресурсы в TopPanel
-                if (progress.credits > 0) {
-                    topPanelComponent.addLunar(progress.credits);
-                }
+                // Устанавливаем ресурсы в TopPanel напрямую, а не через add методы
+                topPanelComponent.setDilithium(progress.minerals || 0);
+                topPanelComponent.setLunar(progress.credits || 0);
                 
-                if (progress.minerals > 0) {
-                    topPanelComponent.addDilithium(progress.minerals);
-                }
-                
-                console.log('Ресурсы успешно загружены из сохранения');
+                console.log('Ресурсы успешно загружены из сохранения:', progress.minerals, 'дилития,', progress.credits, 'лунаров');
             }
               // Загружаем улучшения корабля
             if (progress.shipUpgrades) {

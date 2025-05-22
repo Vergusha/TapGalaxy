@@ -159,20 +159,16 @@ export class SaveManager {
     public static resetProgress(): void {
         this.saveProgress({ ...this.DEFAULT_PROGRESS });
         console.log('Прогресс сброшен до значений по умолчанию');
-    }
-      /**
+    }    /**
      * Инкрементирует счетчик побед
      */
     public static addWin(): void {
         const progress = this.loadProgress();
         progress.combatStats.wins++;
         
-        // Также сохраняем текущее состояние игры
-        const currentState = this.getCurrentGameState();
-        progress.credits = currentState.credits;
-        progress.minerals = currentState.minerals;
-        progress.shipUpgrades = currentState.shipUpgrades;
-        
+        // Не обновляем состояние ресурсов и улучшений, так как
+        // в момент вызова этого метода текущее состояние может быть некорректным
+        // (особенно на боевой сцене, где нет TopPanel с ресурсами)
         this.saveProgress(progress);
     }
     
@@ -184,14 +180,19 @@ export class SaveManager {
         progress.combatStats.losses++;
         this.saveProgress(progress);
     }
-    
-    /**
+      /**
      * Добавляет ресурсы игроку
      */
     public static addResources(credits: number = 0, minerals: number = 0): void {
         const progress = this.loadProgress();
+        
+        console.log('Добавление ресурсов - было:', progress.credits, 'лунаров,', progress.minerals, 'дилития');
+        
         progress.credits += credits;
         progress.minerals += minerals;
+        
+        console.log('Добавление ресурсов - стало:', progress.credits, 'лунаров,', progress.minerals, 'дилития');
+        
         this.saveProgress(progress);
     }
     

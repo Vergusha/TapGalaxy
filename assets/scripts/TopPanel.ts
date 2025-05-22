@@ -153,14 +153,29 @@ export class TopPanel extends Component {
         console.log("Автосохранение данных...");
         SaveManager.saveProgress();
     }    onLoad() {
-        // Загружаем сохраненные данные, если они есть
-        if (SaveManager.hasSavedGame()) {
-            const progress = SaveManager.loadProgress();
-            this.dilithium = progress.minerals || 0;
-            this.lunar = progress.credits || 0;
-            console.log('Ресурсы загружены из сохранения:', this.dilithium, 'дилития,', this.lunar, 'лунаров');
-        }
-        
+        // НЕ загружаем сохраненные данные из SaveManager здесь,
+        // так как это делается в OpenGamePanel через setDilithium и setLunar
         this.updateAllResourceDisplays();
+    }
+
+    // Сеттеры для установки значений ресурсов напрямую
+    setDilithium(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка установить неверное количество дилития:", amount);
+            return;
+        }
+        this.dilithium = amount;
+        this.updateDilithiumLabel();
+        console.log('Установлено значение дилития:', amount);
+    }
+
+    setLunar(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка установить неверное количество лунаров:", amount);
+            return;
+        }
+        this.lunar = amount;
+        this.updateLunarLabel();
+        console.log('Установлено значение лунаров:', amount);
     }
 }
