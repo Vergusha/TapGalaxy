@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Label, Sprite, Button, resources, SpriteFrame, UITransform } from 'cc';
 import { TopPanel } from './TopPanel';
-import { TradeItemDetails, TraderPanel } from './TraderPanel'; // Импортируем интерфейс и TraderPanel
+import { TraderPanel } from './TraderPanel';
+import { TradeItemDetails } from './TradeTypes';
 
 const { ccclass, property } = _decorator;
 

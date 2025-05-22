@@ -2,26 +2,44 @@ import { _decorator, Component, Node, Prefab, instantiate, find, EventMouse } fr
 
 const { ccclass, property } = _decorator;
 
+export interface ITraderInteraction {
+    notifyPanelClosed(panel: Node): void;
+    hasOpenPanel(): boolean;
+    closePanel(): void;
+}
+
 @ccclass('TraderInteraction')
-export class TraderInteraction extends Component {
+export class TraderInteraction extends Component implements ITraderInteraction {
     @property({ type: Prefab })
     traderPanelPrefab: Prefab = null;
 
     private traderPanelInstance: Node | null = null;
+
+    // Реализация интерфейса ITraderInteraction
+    public hasOpenPanel(): boolean {
+        return !!(this.traderPanelInstance && this.traderPanelInstance.isValid);
+    }
+
+    public closePanel(): void {
+        if (this.traderPanelInstance && this.traderPanelInstance.isValid) {
+            this.traderPanelInstance.destroy();
+            this.traderPanelInstance = null;
+        }
+    }
+
+    public notifyPanelClosed(panel: Node): void {
+        if (this.traderPanelInstance === panel) {
+            this.traderPanelInstance = null;
+        }
+    }
 
     onLoad() {
         this.node.on(Node.EventType.MOUSE_DOWN, this.onClick, this);
     }
 
     onClick(event: EventMouse) {
-        // Если панель уже открыта, не делаем ничего (или можно ее закрывать/переоткрывать)
-        // Для простоты, пока просто не даем открыть вторую.
-        // TraderPanel сама должна будет позаботиться о своем закрытии.
-        if (this.traderPanelInstance && this.traderPanelInstance.isValid) {
+        if (this.hasOpenPanel()) {
             console.log("TraderPanel is already open.");
-            // Опционально: можно сделать так, чтобы повторный клик закрывал панель
-            // this.traderPanelInstance.destroy();
-            // this.traderPanelInstance = null;
             return;
         }
 
@@ -30,7 +48,7 @@ export class TraderInteraction extends Component {
             return;
         }
 
-        const canvas = find('Canvas'); // Ищем Canvas в сцене
+        const canvas = find('Canvas');
         if (!canvas) {
             console.error("Canvas not found in the scene.");
             return;
@@ -38,17 +56,10 @@ export class TraderInteraction extends Component {
 
         this.traderPanelInstance = instantiate(this.traderPanelPrefab);
         canvas.addChild(this.traderPanelInstance);
-        
-        // Опционально: можно позиционировать панель
-        // this.traderPanelInstance.setPosition(0, 0); // Например, в центр канваса
     }
 
     onDestroy() {
         this.node.off(Node.EventType.MOUSE_DOWN, this.onClick, this);
-        // Если панель трейдера еще существует, когда объект трейдера уничтожается,
-        // возможно, ее тоже стоит закрыть.
-        if (this.traderPanelInstance && this.traderPanelInstance.isValid) {
-            // this.traderPanelInstance.destroy();
-        }
+        this.closePanel();
     }
 }

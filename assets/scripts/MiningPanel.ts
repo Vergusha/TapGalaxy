@@ -70,10 +70,8 @@ export class MiningPanel extends Component {
         } else {
             console.warn("MiningPanel: CloseButton не назначен в инспекторе.");
         }
-    }
-
-    onEnable() {
-        // Only search for TopPanel if it hasn't been set yet
+    }    onEnable() {
+        // Ищем TopPanel только если он еще не установлен
         if (!this.topPanelComponent) {
             const topPanelNode = find('Canvas/TopPanel');
             if (topPanelNode) {
@@ -88,7 +86,10 @@ export class MiningPanel extends Component {
             }
         }
         
-        this.spawnUpgrades();
+        // В любом случае обновляем улучшения при включении панели
+        if (this.topPanelComponent && this.content) {
+            this.spawnUpgrades();
+        }
     }
 
     spawnUpgrades() {
@@ -108,16 +109,6 @@ export class MiningPanel extends Component {
             if (miningUpdate) {
                 miningUpdate.setData(upgradeData, this.topPanelComponent, i === 0);
             }
-        }
-    }
-
-    // Если панель может быть скрыта и показана, и нужно обновить UI при показе:
-    onEnable() {
-        // Если topPanelComponent уже найден, можно просто перестроить улучшения,
-        // чтобы отразить актуальное состояние из MiningPanel.upgrades
-        if (this.topPanelComponent && this.content) {
-             // console.log("MiningPanel onEnable: Respawning upgrades to reflect current state.");
-            this.spawnUpgrades();
         }
     }
 
