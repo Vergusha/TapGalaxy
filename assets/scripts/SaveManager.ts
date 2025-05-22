@@ -9,6 +9,10 @@ export interface PlayerProgress {
     credits: number;
     minerals: number;
     
+    // Пассивный доход
+    passiveDilithiumIncome: number;
+    passiveLunarIncome: number;
+    
     // Улучшения корабля
     shipUpgrades: {
         hpBonus: number;
@@ -40,6 +44,8 @@ export class SaveManager {
     private static readonly DEFAULT_PROGRESS: PlayerProgress = {
         credits: 0,
         minerals: 0,
+        passiveDilithiumIncome: 0,
+        passiveLunarIncome: 0,
         shipUpgrades: {
             hpBonus: 0,
             shieldBonus: 0,
@@ -78,8 +84,7 @@ export class SaveManager {
     
     /**
      * Собирает текущее состояние игры из компонентов
-     */
-    private static getCurrentGameState(): PlayerProgress {
+     */    private static getCurrentGameState(): PlayerProgress {
         const progress = { ...this.DEFAULT_PROGRESS };
         
         // Ищем TopPanel для получения текущих ресурсов
@@ -89,6 +94,8 @@ export class SaveManager {
             if (topPanel) {
                 progress.credits = topPanel.getLunar();
                 progress.minerals = topPanel.getDilithium();
+                progress.passiveDilithiumIncome = topPanel.getPassiveDilithiumIncome();
+                progress.passiveLunarIncome = topPanel.getPassiveLunarIncome();
             }
         }
         

@@ -24,14 +24,18 @@ export class CombatManager extends Component {
     @property(ShipStats)
     heroStats: ShipStats = null;
 
-    private baseDamage: number = 10;    start() {
+    private baseDamage: number = 10;
+    private readonly CLICK_COOLDOWN: number = 0.1; // 100ms кулдаун между кликами
+    private lastClickTime: number = 0;
+
+    start() {
         // Позиционируем корабли и HUD
         this.setupPositions();
 
         // Initialize ships with base stats + upgrades from SpaceshipPanel
         const upgrades = this.getUpgrades();
         
-        this.enemyStats.initialize(1000, 500);
+        this.enemyStats.initialize(100, 50);
         this.heroStats.initialize(
             100 + (upgrades.hpBonus || 0),
             50 + (upgrades.shieldBonus || 0)
@@ -92,6 +96,13 @@ export class CombatManager extends Component {
         // Replace require with import
         return SpaceshipPanel.getUpgradeValues();
     }    private onEnemyClick() {
+        const currentTime = director.getTotalTime();
+        // Проверяем, прошел ли кулдаун
+        if (currentTime - this.lastClickTime < this.CLICK_COOLDOWN) {
+            return; // Игнорируем клик, если кулдаун еще не истек
+        }
+        this.lastClickTime = currentTime; // Обновляем время последнего клика
+
         // Добавляем анимацию клика (вспышка/эффект удара)
         this.animateAttack();
         

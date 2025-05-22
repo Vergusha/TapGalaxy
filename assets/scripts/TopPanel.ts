@@ -25,7 +25,16 @@ export class TopPanel extends Component {
 
     getLunar(): number {
         return this.lunar;
-    }    // Методы для добавления ресурсов
+    }    // Геттеры для получения значений пассивного дохода
+    getPassiveDilithiumIncome(): number {
+        return this.passiveDilithiumIncome;
+    }
+
+    getPassiveLunarIncome(): number {
+        return this.passiveLunarIncome;
+    }
+
+    // Методы для добавления ресурсов
     addDilithium(amount: number) {
         if (amount === undefined || isNaN(amount)) {
             console.error("TopPanel: Попытка добавить неверное количество дилития:", amount);
@@ -178,4 +187,24 @@ export class TopPanel extends Component {
         this.updateLunarLabel();
         console.log('Установлено значение лунаров:', amount);
     }
+
+    setPassiveDilithiumIncome(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка установить неверное значение пассивного дохода дилития:", amount);
+            return;
+        }
+        this.passiveDilithiumIncome = amount;
+        console.log('Установлено значение пассивного дохода дилития:', amount);
+    }
+
+    setPassiveLunarIncome(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка установить неверное значение пассивного дохода лунаров:", amount);
+            return;
+        }
+        this.passiveLunarIncome = amount;
+        console.log('Установлено значение пассивного дохода лунаров:', amount);
+    }
+
+    // Обновление отображения
 }

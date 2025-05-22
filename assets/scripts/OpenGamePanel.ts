@@ -31,8 +31,7 @@ export class OpenGamePanel extends Component {
     }
       /**
      * Загружает сохраненный прогресс из SaveManager
-     */
-    private loadSavedProgress(topPanelNode: Node) {
+     */    private loadSavedProgress(topPanelNode: Node) {
         // Если есть сохраненный прогресс, загружаем его
         if (SaveManager.hasSavedGame()) {
             const progress = SaveManager.loadProgress();
@@ -44,7 +43,12 @@ export class OpenGamePanel extends Component {
                 topPanelComponent.setDilithium(progress.minerals || 0);
                 topPanelComponent.setLunar(progress.credits || 0);
                 
+                // Устанавливаем значения пассивного дохода
+                topPanelComponent.setPassiveDilithiumIncome(progress.passiveDilithiumIncome || 0);
+                topPanelComponent.setPassiveLunarIncome(progress.passiveLunarIncome || 0);
+                
                 console.log('Ресурсы успешно загружены из сохранения:', progress.minerals, 'дилития,', progress.credits, 'лунаров');
+                console.log('Пассивный доход загружен:', progress.passiveDilithiumIncome, 'дилития/сек,', progress.passiveLunarIncome, 'лунаров/сек');
             }
               // Загружаем улучшения корабля
             if (progress.shipUpgrades) {
