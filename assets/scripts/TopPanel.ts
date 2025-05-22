@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Label } from 'cc';
+import { SaveManager } from './SaveManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('TopPanel')
@@ -12,9 +13,10 @@ export class TopPanel extends Component {
     private dilithium: number = 0;
     private lunar: number = 0;
     private passiveDilithiumIncome: number = 0;
-    private passiveLunarIncome: number = 0;
-
-    private dilithiumPerClick: number = 1; // Base value for dilithium per click
+    private passiveLunarIncome: number = 0;    private dilithiumPerClick: number = 1; // Base value for dilithium per click
+    private autoSaveTimer: number = 0;
+    private autoSaveInterval: number = 10; // Автосохранение каждые 10 секунд после изменений
+    private needsAutoSave: boolean = false; // Флаг, указывающий на необходимость автосохранения
 
     // Геттеры для получения значений ресурсов
     getDilithium(): number {
@@ -23,9 +25,7 @@ export class TopPanel extends Component {
 
     getLunar(): number {
         return this.lunar;
-    }
-
-    // Методы для добавления ресурсов
+    }    // Методы для добавления ресурсов
     addDilithium(amount: number) {
         if (amount === undefined || isNaN(amount)) {
             console.error("TopPanel: Попытка добавить неверное количество дилития:", amount);
@@ -33,6 +33,7 @@ export class TopPanel extends Component {
         }
         this.dilithium += amount;
         this.updateDilithiumLabel();
+        this.needsAutoSave = true; // Помечаем для автосохранения
     }
 
     addLunar(amount: number) {
@@ -42,9 +43,8 @@ export class TopPanel extends Component {
         }
         this.lunar += amount;
         this.updateLunarLabel();
-    }
-
-    // Методы для списания ресурсов
+        this.needsAutoSave = true; // Помечаем для автосохранения
+    }    // Методы для списания ресурсов
     spendDilithium(amount: number): boolean {
         if (amount === undefined || isNaN(amount)) {
             console.error("TopPanel: Попытка списать неверное количество дилития:", amount);
@@ -53,6 +53,7 @@ export class TopPanel extends Component {
         if (this.dilithium >= amount) {
             this.dilithium -= amount;
             this.updateDilithiumLabel();
+            this.needsAutoSave = true; // Помечаем для автосохранения
             return true;
         }
         return false;
@@ -66,6 +67,7 @@ export class TopPanel extends Component {
         if (this.lunar >= amount) {
             this.lunar -= amount;
             this.updateLunarLabel();
+            this.needsAutoSave = true; // Помечаем для автосохранения
             return true;
         }
         return false;
@@ -109,29 +111,56 @@ export class TopPanel extends Component {
     // Метод для клика по планете
     performClick() {
         this.addDilithium(this.dilithiumPerClick);
-    }
-
-    // Обновление каждый кадр для пассивного дохода
+    }    // Обновление каждый кадр для пассивного дохода
     update(deltaTime: number) {
+        let resourcesChanged = false;
+        
         if (this.passiveDilithiumIncome > 0) {
             this.addDilithium(this.passiveDilithiumIncome * deltaTime);
+            resourcesChanged = true;
         }
         if (this.passiveLunarIncome > 0) {
             this.addLunar(this.passiveLunarIncome * deltaTime);
+            resourcesChanged = true;
         }
-    }
 
-    // Add this new method
+        // Если изменились ресурсы от пассивного дохода, помечаем для сохранения
+        if (resourcesChanged) {
+            this.needsAutoSave = true;
+        }
+
+        // Логика автосохранения
+        if (this.needsAutoSave) {
+            this.autoSaveTimer += deltaTime;
+            if (this.autoSaveTimer >= this.autoSaveInterval) {
+                this.autoSave();
+                this.autoSaveTimer = 0;
+                this.needsAutoSave = false;
+            }
+        }
+    }    // Add this new method
     increaseDilithiumPerClick(amount: number) {
         if (amount === undefined || isNaN(amount)) {
             console.error("TopPanel: Попытка добавить неверное значение к добыче дилития:", amount);
             return;
         }
         this.dilithiumPerClick += amount;
+        this.needsAutoSave = true; // Помечаем для автосохранения
         console.log(`Добыча дилития за клик увеличена на ${amount}. Текущее значение: ${this.dilithiumPerClick}`);
-    }
-
-    onLoad() {
+    }// Метод автосохранения
+    autoSave() {
+        // Реализуем логику автосохранения
+        console.log("Автосохранение данных...");
+        SaveManager.saveProgress();
+    }    onLoad() {
+        // Загружаем сохраненные данные, если они есть
+        if (SaveManager.hasSavedGame()) {
+            const progress = SaveManager.loadProgress();
+            this.dilithium = progress.minerals || 0;
+            this.lunar = progress.credits || 0;
+            console.log('Ресурсы загружены из сохранения:', this.dilithium, 'дилития,', this.lunar, 'лунаров');
+        }
+        
         this.updateAllResourceDisplays();
     }
 }

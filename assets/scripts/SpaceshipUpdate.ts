@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Label, Sprite, Button, resources, SpriteFrame, UITransform } from 'cc';
 import { TopPanel } from './TopPanel';
 import { SpaceshipUpgradeData, SpaceshipPanel } from './SpaceshipPanel';
+import { SaveManager } from './SaveManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('SpaceshipUpdate')
@@ -93,12 +94,13 @@ export class SpaceshipUpdate extends Component {
             if (this.upgradeData.damageBonus) {
                 // Добавить метод увеличения урона
                 console.log(`Урон увеличен на ${this.upgradeData.damageBonus}`);
-            }
-
-            // Обновляем уровень и стоимость
+            }            // Обновляем уровень и стоимость
             this.upgradeData.level++;
             SpaceshipPanel.updateUpgradeLevel(this.upgradeData.name, this.upgradeData.level);
             
+            // Сохраняем прогресс после покупки улучшения
+            SaveManager.saveProgress();
+
             // Обновляем отображение
             this.updateDisplay();
             console.log(`Куплено улучшение: ${this.upgradeData.name}, уровень ${this.upgradeData.level}`);

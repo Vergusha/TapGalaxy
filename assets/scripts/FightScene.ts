@@ -1,4 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
+import { SaveManager } from './SaveManager';
+import { SpaceshipPanel } from './SpaceshipPanel';
 const { ccclass, property } = _decorator;
 
 @ccclass('FightScene')
@@ -17,6 +19,22 @@ export class FightScene extends Component {
 
     start() {
         this.initializePositions();
+        
+        // Загружаем сохраненные данные для боя
+        this.loadSavedGameState();
+    }
+    
+    /**
+     * Загружает сохраненное состояние игры для использования в бою
+     */
+    private loadSavedGameState() {
+        if (SaveManager.hasSavedGame()) {
+            const progress = SaveManager.loadProgress();
+            console.log('Загружаем данные корабля для боя из сохранения');
+            
+            // Здесь можно использовать сохраненные данные для настройки боя
+            // Например, установить характеристики корабля героя на основе сохраненных улучшений
+        }
     }
 
     private initializePositions() {

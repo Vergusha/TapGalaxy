@@ -153,4 +153,41 @@ export class SpaceshipPanel extends Component {
 
         return { hpBonus, shieldBonus, damageBonus };
     }
+
+    // Метод для загрузки сохраненных улучшений
+    public static loadSavedUpgrades(shipUpgrades: any) {
+        if (!shipUpgrades) return;
+        
+        // Получаем текущие улучшения
+        const currentUpgrades = SpaceshipPanel.upgrades;
+        
+        // Если у нас есть сохраненные уровни улучшений, применяем их
+        if (shipUpgrades.hpBonus !== undefined && currentUpgrades[0]) {
+            const hpLevel = Math.floor(shipUpgrades.hpBonus / currentUpgrades[0].hpBonus);
+            if (hpLevel > 0) {
+                currentUpgrades[0].level = hpLevel;
+            }
+        }
+        
+        if (shipUpgrades.shieldBonus !== undefined && currentUpgrades[1]) {
+            const shieldLevel = Math.floor(shipUpgrades.shieldBonus / currentUpgrades[1].shieldBonus);
+            if (shieldLevel > 0) {
+                currentUpgrades[1].level = shieldLevel;
+            }
+        }
+        
+        if (shipUpgrades.damageBonus !== undefined && currentUpgrades[2]) {
+            const damageLevel = Math.floor(shipUpgrades.damageBonus / currentUpgrades[2].damageBonus);
+            if (damageLevel > 0) {
+                currentUpgrades[2].level = damageLevel;
+            }
+        }
+        
+        // Обновляем стоимость улучшений на основе уровня
+        currentUpgrades.forEach(upgrade => {
+            if (upgrade.level > 0) {
+                upgrade.costLunar = Math.floor(upgrade.costLunar * Math.pow(1.15, upgrade.level));
+            }
+        });
+    }
 }

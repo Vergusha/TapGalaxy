@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Button, director, Prefab, instantiate } from 'cc';
+import { SaveManager } from './SaveManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('FightButton')
@@ -25,9 +26,10 @@ export class FightButton extends Component {
         if (this.button) {
             this.button.node.on('click', this.onFightButtonClick, this);
         }
-    }
-
-    private onFightButtonClick() {
+    }    private onFightButtonClick() {
+        // Сохраняем текущее состояние перед боем
+        SaveManager.saveProgress();
+        
         // Load the Fight scene
         director.loadScene('Fight', (err) => {
             if (err) {

@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, director, Vec3 } from 'cc';
 import { ShipStats } from './ShipStats';
 import { SpaceshipPanel } from './SpaceshipPanel';
+import { SaveManager } from './SaveManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('CombatManager')
@@ -75,10 +76,14 @@ export class CombatManager extends Component {
         if (isDead) {
             this.onEnemyDefeated();
         }
-    }
-
-    private onEnemyDefeated() {
+    }    private onEnemyDefeated() {
         // Add any reward logic here
+        
+        // Сохраняем прогресс
+        SaveManager.addWin();
+        
+        // Добавляем награду за победу
+        SaveManager.addResources(50, 10); // Награда: 50 кредитов и 10 минералов
         
         // Return to main scene
         director.loadScene('Main', (err) => {
