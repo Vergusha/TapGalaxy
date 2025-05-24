@@ -123,3 +123,5 @@ export class MiningPanel extends Component {
         }
     }
 }
+
+// credits/minerals не используются, только costLunar/costDilithium и методы TopPanel

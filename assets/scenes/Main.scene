@@ -297,6 +297,10 @@
       "__uuid__": "7b9bb2b6-d342-41c9-a3e7-ae77b8329797",
       "__expectedType__": "cc.Prefab"
     },
+    "settingsPanelPrefab": {
+      "__uuid__": "5c4a4484-39aa-46b5-90c3-b2374e7a6087",
+      "__expectedType__": "cc.Prefab"
+    },
     "_id": "ffHAzEBf9IOruDlTRPrCPk"
   },
   {

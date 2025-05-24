@@ -6,8 +6,8 @@ const { ccclass, property } = _decorator;
 // Интерфейс для хранения данных игрока
 export interface PlayerProgress {
     // Ресурсы игрока
-    credits: number;
-    minerals: number;
+    lunar: number;
+    dilithium: number;
     
     // Пассивный доход
     passiveDilithiumIncome: number;
@@ -42,8 +42,8 @@ export class SaveManager {
     
     // Значения по умолчанию для нового игрока
     private static readonly DEFAULT_PROGRESS: PlayerProgress = {
-        credits: 0,
-        minerals: 0,
+        lunar: 0,
+        dilithium: 0,
         passiveDilithiumIncome: 0,
         passiveLunarIncome: 0,
         shipUpgrades: {
@@ -61,7 +61,7 @@ export class SaveManager {
         },
         lastSaved: Date.now()
     };
-      /**
+    /**
      * Сохраняет текущий прогресс игрока
      * @param progress Данные прогресса для сохранения (опционально, если не передано - прогресс будет собран из текущего состояния игры)
      */
@@ -92,8 +92,8 @@ export class SaveManager {
         if (topPanelNode) {
             const topPanel = topPanelNode.getComponent(TopPanel);
             if (topPanel) {
-                progress.credits = topPanel.getLunar();
-                progress.minerals = topPanel.getDilithium();
+                progress.lunar = topPanel.getLunar();
+                progress.dilithium = topPanel.getDilithium();
                 progress.passiveDilithiumIncome = topPanel.getPassiveDilithiumIncome();
                 progress.passiveLunarIncome = topPanel.getPassiveLunarIncome();
             }
@@ -190,15 +190,15 @@ export class SaveManager {
       /**
      * Добавляет ресурсы игроку
      */
-    public static addResources(credits: number = 0, minerals: number = 0): void {
+    public static addResources(lunar: number = 0, dilithium: number = 0): void {
         const progress = this.loadProgress();
         
-        console.log('Добавление ресурсов - было:', progress.credits, 'лунаров,', progress.minerals, 'дилития');
+        console.log('Добавление ресурсов - было:', progress.lunar, 'лунаров,', progress.dilithium, 'дилития');
         
-        progress.credits += credits;
-        progress.minerals += minerals;
+        progress.lunar += lunar;
+        progress.dilithium += dilithium;
         
-        console.log('Добавление ресурсов - стало:', progress.credits, 'лунаров,', progress.minerals, 'дилития');
+        console.log('Добавление ресурсов - стало:', progress.lunar, 'лунаров,', progress.dilithium, 'дилития');
         
         this.saveProgress(progress);
     }

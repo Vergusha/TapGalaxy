@@ -15,6 +15,10 @@ export class OpenGamePanel extends Component {
     @property({ type: Prefab })
     bottomPanelPrefab: Prefab = null;
 
+    @property({ type: Prefab })
+    settingsPanelPrefab: Prefab = null;
+    private settingsPanelInstance: Node = null;
+
     start() {
         // Создаём Game_Panel
         const gamePanel = instantiate(this.gamePanelPrefab);
@@ -28,8 +32,31 @@ export class OpenGamePanel extends Component {
         
         // Загружаем сохраненный прогресс
         this.loadSavedProgress(topPanel);
+
+        // Находим кнопку настроек в GamePanel и вешаем обработчик
+        const gamePanelNode = this.node.children.find(child => child.name === 'GamePanel');
+        if (gamePanelNode) {
+            const settingsButton = gamePanelNode.getChildByName('SettingsButton');
+            if (settingsButton) {
+                settingsButton.on(Node.EventType.MOUSE_DOWN, this.openSettingsPanel, this);
+            }
+        }
     }
-      /**
+
+    openSettingsPanel() {
+        if (this.settingsPanelInstance && this.settingsPanelInstance.isValid) {
+            return;
+        }
+        if (!this.settingsPanelPrefab) {
+            console.error('SettingsPanel prefab is not assigned in OpenGamePanel.');
+            return;
+        }
+        const canvas = this.node.parent || this.node;
+        this.settingsPanelInstance = instantiate(this.settingsPanelPrefab);
+        canvas.addChild(this.settingsPanelInstance);
+    }
+
+    /**
      * Загружает сохраненный прогресс из SaveManager
      */    private loadSavedProgress(topPanelNode: Node) {
         // Если есть сохраненный прогресс, загружаем его
@@ -40,14 +67,14 @@ export class OpenGamePanel extends Component {
             const topPanelComponent = topPanelNode.getComponent(TopPanel);
             if (topPanelComponent) {
                 // Устанавливаем ресурсы в TopPanel напрямую, а не через add методы
-                topPanelComponent.setDilithium(progress.minerals || 0);
-                topPanelComponent.setLunar(progress.credits || 0);
+                topPanelComponent.setDilithium(progress.dilithium || 0);
+                topPanelComponent.setLunar(progress.lunar || 0);
                 
                 // Устанавливаем значения пассивного дохода
                 topPanelComponent.setPassiveDilithiumIncome(progress.passiveDilithiumIncome || 0);
                 topPanelComponent.setPassiveLunarIncome(progress.passiveLunarIncome || 0);
                 
-                console.log('Ресурсы успешно загружены из сохранения:', progress.minerals, 'дилития,', progress.credits, 'лунаров');
+                console.log('Ресурсы успешно загружены из сохранения:', progress.dilithium, 'дилития,', progress.lunar, 'лунаров');
                 console.log('Пассивный доход загружен:', progress.passiveDilithiumIncome, 'дилития/сек,', progress.passiveLunarIncome, 'лунаров/сек');
             }
               // Загружаем улучшения корабля
