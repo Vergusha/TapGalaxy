@@ -23,13 +23,10 @@ export class FightButton extends Component {
     start() {
         // Get button component
         this.button = this.getComponent(Button);
-        // Найти FightTimer на том же FightNode
+        // Найти FightTimer на FightNode
         const fightNode = this.node.parent;
         if (fightNode) {
-            const labelNode = fightNode.getChildByName('Label');
-            if (labelNode) {
-                this.fightTimer = labelNode.getComponent(FightTimer);
-            }
+            this.fightTimer = fightNode.getComponent(FightTimer);
         }
         // Add click event listener
         if (this.button) {

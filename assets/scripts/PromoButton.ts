@@ -23,7 +23,6 @@ export class PromoButton extends Component {
         if (code === 'XENOBIT100') {
             // Найти TopPanel и добавить XenoBit
             let topPanel: TopPanel | null = null;
-            // Всегда ищем TopPanel через find, не используем topPanelNode
             const node = find('Canvas/TopPanel');
             if (node) topPanel = node.getComponent(TopPanel);
             if (topPanel) {
@@ -31,6 +30,20 @@ export class PromoButton extends Component {
                 this.promoEditBox.string = '';
                 // Можно добавить визуальное подтверждение
             }
+        }
+        // Новый промокод для скипа таймера боя
+        if (code === 'SKIPFIGHT') {
+            // Найти FightTimer на FightNode (а не на Label)
+            const fightNode = find('Canvas/GamePanel/FightNode');
+            if (fightNode) {
+                const fightTimer = fightNode.getComponent('FightTimer') as any;
+                if (fightTimer && typeof fightTimer.timeLeft === 'number') {
+                    fightTimer.timeLeft = 0;
+                    fightTimer.isReady = true;
+                    if (typeof fightTimer.updateLabel === 'function') fightTimer.updateLabel();
+                }
+            }
+            this.promoEditBox.string = '';
         }
         // Добавьте другие коды и награды по необходимости
     }
