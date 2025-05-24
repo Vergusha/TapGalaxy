@@ -1,4 +1,6 @@
 import { _decorator, Component, Node, Prefab, instantiate, find, EventMouse } from 'cc';
+import { DialogManager } from './DialogManager';
+import { DialogData } from './DialogSystem';
 
 const { ccclass, property } = _decorator;
 
@@ -12,6 +14,9 @@ export interface ITraderInteraction {
 export class TraderInteraction extends Component implements ITraderInteraction {
     @property({ type: Prefab })
     traderPanelPrefab: Prefab = null;
+
+    @property({ type: Boolean })
+    showDialogBeforeTrading: boolean = true;
 
     private traderPanelInstance: Node | null = null;
 
@@ -35,9 +40,7 @@ export class TraderInteraction extends Component implements ITraderInteraction {
 
     onLoad() {
         this.node.on(Node.EventType.MOUSE_DOWN, this.onClick, this);
-    }
-
-    onClick(event: EventMouse) {
+    }    onClick(event: EventMouse) {
         if (this.hasOpenPanel()) {
             console.log("TraderPanel is already open.");
             return;
@@ -48,6 +51,46 @@ export class TraderInteraction extends Component implements ITraderInteraction {
             return;
         }
 
+        // Показать диалог торговца перед открытием панели
+        if (this.showDialogBeforeTrading) {
+            this.showTraderDialog();
+        } else {
+            this.openTraderPanel();
+        }
+    }
+
+    private showTraderDialog() {
+        const traderDialogs: DialogData[] = [
+            {
+                speaker: "Торговец",
+                text: "Добро пожаловать в мой магазин, путешественник!",
+                avatarIndex: 0 // Индекс аватара торговца
+            },
+            {
+                speaker: "Торговец", 
+                text: "У меня есть отличные предложения по обмену ресурсов.",
+                avatarIndex: 0
+            },
+            {
+                speaker: "Торговец",
+                text: "Давайте посмотрим, что я могу вам предложить...",
+                avatarIndex: 0
+            }
+        ];
+
+        const dialogManager = DialogManager.getInstance();
+        if (dialogManager) {
+            dialogManager.showDialog(traderDialogs, () => {
+                // После завершения диалога открыть панель торговца
+                this.openTraderPanel();
+            });
+        } else {
+            // Если DialogManager недоступен, просто открыть панель
+            this.openTraderPanel();
+        }
+    }
+
+    private openTraderPanel() {
         const canvas = find('Canvas');
         if (!canvas) {
             console.error("Canvas not found in the scene.");

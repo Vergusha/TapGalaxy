@@ -1,0 +1,54 @@
+{
+  "welcome": {
+    "title": "Welcome!",
+    "captain_greeting": "Captain, welcome aboard the starship 'Galactica'!",
+    "ai_introduction": "I am the ship's AI. I will assist you in your journey across the galaxy.",
+    "system_ready": "All systems are ready. Have a safe flight!"
+  },
+  "combat": {
+    "enemy_detected": "Enemy ship detected!",
+    "battle_stations": "Battle stations! All hands to combat positions!",
+    "victory": "Enemy defeated! Victory is ours!",
+    "retreat": "Retreating! We live to fight another day!"
+  },
+  "trading": {
+    "trader_greeting": "Welcome to my shop, traveler!",
+    "what_to_buy": "What would you like to purchase?",
+    "good_deal": "Excellent deal! Come back again!",
+    "no_money": "You don't have enough credits for this purchase."
+  },
+  "mining": {
+    "resource_found": "Resource discovered: {resource}",
+    "mining_start": "Starting extraction of {resource}...",
+    "mining_complete": "Mining complete! Obtained: {amount} units of {resource}",
+    "efficiency": "Mining efficiency: {efficiency}%",
+    "hazard_warning": "WARNING! Mining hazard detected!"
+  },
+  "spaceship": {
+    "upgrade_available": "Upgrade available: {upgrade}",
+    "upgrade_cost": "Cost: {cost} credits",
+    "repair_needed": "System requires repair",
+    "diagnostics": "Ship systems diagnostics:",
+    "hull_integrity": "Hull integrity: {percentage}%",
+    "engine_status": "Engine status: {percentage}%",
+    "weapon_status": "Weapon status: {percentage}%"
+  },
+  "choices": {
+    "yes": "Yes",
+    "no": "No",
+    "attack": "Attack!",
+    "negotiate": "Try to negotiate",
+    "retreat": "Retreat",
+    "explore": "Explore",
+    "bypass": "Bypass",
+    "send_probe": "Send probe"
+  },
+  "system": {
+    "save_complete": "Progress saved",
+    "load_complete": "Progress loaded",
+    "settings_updated": "Settings updated",
+    "relationship_improved": "Relationship improved",
+    "critical_situation": "CRITICAL SITUATION!",
+    "mission_complete": "Mission complete!"
+  }
+}

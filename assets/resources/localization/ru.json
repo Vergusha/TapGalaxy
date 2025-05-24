@@ -1,0 +1,54 @@
+{
+  "welcome": {
+    "title": "Добро пожаловать!",
+    "captain_greeting": "Капитан, добро пожаловать на борт звездолета 'Галактика'!",
+    "ai_introduction": "Я - бортовой ИИ. Буду помогать вам в путешествии по галактике.",
+    "system_ready": "Все системы готовы к работе. Желаю удачного полета!"
+  },
+  "combat": {
+    "enemy_detected": "Обнаружен вражеский корабль!",
+    "battle_stations": "Боевая тревога! Всем по местам!",
+    "victory": "Враг повержен! Победа за нами!",
+    "retreat": "Отступаем! Живем для следующего боя!"
+  },
+  "trading": {
+    "trader_greeting": "Добро пожаловать в мой магазин, путешественник!",
+    "what_to_buy": "Что желаете приобрести?",
+    "good_deal": "Отличная сделка! Возвращайтесь снова!",
+    "no_money": "У вас недостаточно кредитов для этой покупки."
+  },
+  "mining": {
+    "resource_found": "Обнаружен ресурс: {resource}",
+    "mining_start": "Начинаю добычу {resource}...",
+    "mining_complete": "Добыча завершена! Получено: {amount} единиц {resource}",
+    "efficiency": "Эффективность добычи: {efficiency}%",
+    "hazard_warning": "ВНИМАНИЕ! Обнаружена опасность при добыче!"
+  },
+  "spaceship": {
+    "upgrade_available": "Доступно улучшение: {upgrade}",
+    "upgrade_cost": "Стоимость: {cost} кредитов",
+    "repair_needed": "Система нуждается в ремонте",
+    "diagnostics": "Диагностика систем корабля:",
+    "hull_integrity": "Целостность корпуса: {percentage}%",
+    "engine_status": "Состояние двигателя: {percentage}%",
+    "weapon_status": "Состояние вооружения: {percentage}%"
+  },
+  "choices": {
+    "yes": "Да",
+    "no": "Нет",
+    "attack": "Атаковать!",
+    "negotiate": "Попытаться договориться",
+    "retreat": "Отступить",
+    "explore": "Исследовать",
+    "bypass": "Обойти стороной",
+    "send_probe": "Отправить зонд"
+  },
+  "system": {
+    "save_complete": "Прогресс сохранен",
+    "load_complete": "Прогресс загружен",
+    "settings_updated": "Настройки обновлены",
+    "relationship_improved": "Отношения улучшены",
+    "critical_situation": "КРИТИЧЕСКАЯ СИТУАЦИЯ!",
+    "mission_complete": "Миссия выполнена!"
+  }
+}
