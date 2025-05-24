@@ -214,12 +214,21 @@ export class TopPanel extends Component {
     update(deltaTime: number) {
         let resourcesChanged = false;
         
+        // Проверяем, есть ли активный штраф к пассивному доходу
+        const hasDebuff = SaveManager.hasActiveIncomeDebuff();
+        // Применяем коэффициент 0.5 (50% снижение) если есть штраф
+        const incomeMultiplier = hasDebuff ? 0.5 : 1.0;
+        
         if (this.passiveDilithiumIncome > 0) {
-            this.addDilithium(this.passiveDilithiumIncome * deltaTime);
+            // Учитываем штраф при расчете пассивного дохода
+            const adjustedIncome = this.passiveDilithiumIncome * incomeMultiplier;
+            this.addDilithium(adjustedIncome * deltaTime);
             resourcesChanged = true;
         }
         if (this.passiveLunarIncome > 0) {
-            this.addLunar(this.passiveLunarIncome * deltaTime);
+            // Учитываем штраф при расчете пассивного дохода
+            const adjustedIncome = this.passiveLunarIncome * incomeMultiplier;
+            this.addLunar(adjustedIncome * deltaTime);
             resourcesChanged = true;
         }
 

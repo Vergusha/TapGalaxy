@@ -40,6 +40,14 @@ export class ShipStats extends Component {
         return this.currentHealth <= 0;
     }
 
+    /**
+     * Проверяет, жив ли корабль (здоровье больше 0)
+     * @returns true если корабль жив, false если уничтожен
+     */
+    public isAlive(): boolean {
+        return this.currentHealth > 0;
+    }
+
     private updateBars() {
         if (this.healthBar) {
             this.healthBar.progress = this.currentHealth / this.maxHealth;

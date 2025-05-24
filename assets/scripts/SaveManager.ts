@@ -31,6 +31,9 @@ export interface PlayerProgress {
     
     // Время последнего сохранения
     lastSaved: number;
+    
+    // Штраф к пассивному доходу после поражения
+    incomeDebuffEndTime?: number; // Время окончания штрафа (null или undefined если нет штрафа)
 }
 
 @ccclass('SaveManager')
@@ -51,7 +54,8 @@ export class SaveManager {
             wins: 0,
             losses: 0
         },
-        lastSaved: Date.now()
+        lastSaved: Date.now(),
+        incomeDebuffEndTime: null
     };
     /**
      * Сохраняет текущий прогресс игрока
@@ -188,12 +192,18 @@ export class SaveManager {
     }
     
     /**
-     * Инкрементирует счетчик поражений
+     * Инкрементирует счетчик поражений и применяет штраф к пассивному доходу
      */
     public static addLoss(): void {
         const progress = this.loadProgress();
         progress.combatStats.losses++;
+        
+        // Применяем штраф к пассивному доходу на 5 минут
+        progress.incomeDebuffEndTime = Date.now() + (5 * 60 * 1000);
+        
         this.saveProgress(progress);
+        
+        console.log('Поражение засчитано. Пассивный доход снижен на 50% на 5 минут.');
     }
       /**
      * Добавляет ресурсы игроку
@@ -237,5 +247,55 @@ export class SaveManager {
                 if (topPanel.updateAllResourceDisplays) topPanel.updateAllResourceDisplays();
             }
         }
+    }
+    
+    /**
+     * Применяет штраф к пассивному доходу на определенное время (после поражения)
+     * @param durationMinutes Длительность штрафа в минутах
+     */
+    public static applyIncomeDebuff(durationMinutes: number = 5): void {
+        const progress = this.loadProgress();
+        // Установить время окончания штрафа
+        progress.incomeDebuffEndTime = Date.now() + (durationMinutes * 60 * 1000);
+        console.log(`Применен штраф к пассивному доходу на ${durationMinutes} минут, до ${new Date(progress.incomeDebuffEndTime).toLocaleTimeString()}`);
+        this.saveProgress(progress);
+    }
+    
+    /**
+     * Проверяет, действует ли в данный момент штраф к пассивному доходу
+     * @returns true, если штраф активен, иначе false
+     */
+    public static hasActiveIncomeDebuff(): boolean {
+        const progress = this.loadProgress();
+        // Если время штрафа не задано, штрафа нет
+        if (!progress.incomeDebuffEndTime) return false;
+        
+        // Если текущее время больше времени окончания, штраф закончился
+        const currentTime = Date.now();
+        if (currentTime >= progress.incomeDebuffEndTime) {
+            // Сбросить время штрафа, так как он уже закончился
+            progress.incomeDebuffEndTime = null;
+            this.saveProgress(progress);
+            return false;
+        }
+        
+        // Время штрафа еще не закончилось
+        return true;
+    }
+    
+    /**
+     * Возвращает оставшееся время штрафа в миллисекундах
+     * @returns Оставшееся время в миллисекундах или 0, если штрафа нет
+     */
+    public static getRemainingDebuffTime(): number {
+        const progress = this.loadProgress();
+        if (!progress.incomeDebuffEndTime) return 0;
+        
+        const currentTime = Date.now();
+        if (currentTime >= progress.incomeDebuffEndTime) {
+            return 0;
+        }
+        
+        return progress.incomeDebuffEndTime - currentTime;
     }
 }

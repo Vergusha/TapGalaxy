@@ -42,6 +42,11 @@ export class CombatManager extends Component {
     private readonly CLICK_COOLDOWN: number = 0.1; // 100ms кулдаун между кликами
     private lastClickTime: number = 0;
 
+    private enemyBaseDamage: number = 8; // Базовый урон противника
+    private enemyAttackInterval: number = 2.0; // Интервал между атаками противника (в секундах)
+    private lastEnemyAttackTime: number = 0; // Время последней атаки противника
+    private isGameOver: boolean = false; // Флаг окончания боя
+
     start() {
         // Позиционируем корабли и HUD
         this.setupPositions();
@@ -69,6 +74,9 @@ export class CombatManager extends Component {
             // Добавляем небольшую анимацию "готовности к бою" для корабля врага
             this.animateEnemyReadyToBattle();
         }, 1.2); // Задержка в 1.2 секунды, чтобы все анимации вхождения успели завершиться
+
+        // Запускаем периодические атаки врага
+        this.schedule(this.enemyAttack, this.enemyAttackInterval, Infinity, 1.0);
     }private setupPositions() {
         // Устанавливаем начальные позиции за пределами экрана
         
@@ -377,6 +385,109 @@ export class CombatManager extends Component {
                 }
             }
         }
+    }
+
+    /**
+     * Метод для периодической атаки врага
+     */
+    private enemyAttack() {
+        // Проверяем, жив ли враг и не закончилась ли игра
+        if (this.isGameOver || !this.enemyShip || !this.heroStats.isAlive()) {
+            return;
+        }
+
+        const currentTime = director.getTotalTime();
+        // Проверяем, прошел ли интервал между атаками
+        if (currentTime - this.lastEnemyAttackTime < this.enemyAttackInterval) {
+            return; // Еще не время атаковать
+        }
+        this.lastEnemyAttackTime = currentTime; // Обновляем время последней атаки
+
+        // Атакуем героя
+        const isHeroDead = this.heroStats.takeDamage(this.enemyBaseDamage);
+        
+        // Добавляем анимацию атаки врага
+        this.animateEnemyAttack();
+
+        if (isHeroDead) {
+            this.onGameOver();
+        } else {
+            // Если герой еще жив, добавляем анимацию получения урона
+            this.animateHeroHit();
+        }
+    }
+
+    /**
+     * Анимирует получение урона героем
+     */
+    private animateHeroHit() {
+        if (!this.heroShip) return;
+
+        // Эффект тряски при получении урона
+        const originalPos = this.heroShip.position.clone();
+        
+        // Серия небольших смещений для создания эффекта тряски
+        tween(this.heroShip)
+            .to(0.03, { position: new Vec3(originalPos.x + 5, originalPos.y, originalPos.z) })
+            .to(0.03, { position: new Vec3(originalPos.x - 5, originalPos.y, originalPos.z) })
+            .to(0.03, { position: new Vec3(originalPos.x, originalPos.y + 5, originalPos.z) })
+            .to(0.03, { position: new Vec3(originalPos.x, originalPos.y - 5, originalPos.z) })
+            .to(0.03, { position: originalPos })
+            .start();
+        
+        // Мигание красным для индикации урона
+        const originalScale = this.heroShip.scale.clone();
+        tween(this.heroShip)
+            .to(0.05, { scale: new Vec3(originalScale.x * 1.05, originalScale.y * 1.05, originalScale.z) })
+            .to(0.05, { scale: originalScale })
+            .start();
+    }
+
+    /**
+     * Анимирует атаку врага по герою
+     */
+    private animateEnemyAttack() {
+        if (!this.enemyShip || !this.heroShip) return;
+        
+        // Эффект атаки для врага
+        const originalEnemyPos = this.enemyShip.position.clone();
+        tween(this.enemyShip)
+            .to(0.05, { position: new Vec3(originalEnemyPos.x, originalEnemyPos.y - 20, originalEnemyPos.z) })
+            .to(0.1, { position: originalEnemyPos })
+            .start();
+
+        // Можно добавить визуальный эффект атаки (упрощенный вариант)
+        // В реальном проекте лучше использовать спрайт или частицы для эффекта атаки
+        const attackStartPos = new Vec3(originalEnemyPos.x, originalEnemyPos.y - 50, originalEnemyPos.z);
+        const attackEndPos = new Vec3(this.heroShip.position.x, this.heroShip.position.y + 50, this.heroShip.position.z);
+        
+        // Здесь в реальном проекте мы бы создали временный узел для эффекта атаки
+        console.log('Атака из позиции', attackStartPos.toString(), 'в позицию', attackEndPos.toString());
+    }
+
+    /**
+     * Обработка окончания игры
+     */
+    private onGameOver() {
+        this.isGameOver = true; // Устанавливаем флаг окончания игры
+
+        // Отключаем обработчик кликов, чтобы игрок больше не мог взаимодействовать
+        if (this.enemyShip) {
+            this.enemyShip.off(Node.EventType.TOUCH_START, this.onEnemyClick, this);
+        }
+
+        // Сохраняем поражение - это также применит штраф к пассивному доходу
+        SaveManager.addLoss();
+
+        // Затем, через некоторое время, возвращаемся на главный экран
+        this.scheduleOnce(() => {
+            director.loadScene('Main', (err) => {
+                if (err) {
+                    console.error('Failed to load Main scene:', err);
+                    return;
+                }
+            });
+        }, 2.0);
     }
 
     onDestroy() {
