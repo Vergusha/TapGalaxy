@@ -31,7 +31,7 @@ export class SpaceshipPanel extends Component {
     // Статический массив улучшений
     private static upgrades: SpaceshipUpgradeData[] = SpaceshipPanel.initializeUpgradesData();
 
-    private static initializeUpgradesData(): SpaceshipUpgradeData[] {
+    public static initializeUpgradesData(): SpaceshipUpgradeData[] {
         console.log("Initializing default upgrades data for SpaceshipPanel.");
         return [
             {

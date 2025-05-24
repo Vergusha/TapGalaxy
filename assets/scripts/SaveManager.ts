@@ -153,7 +153,16 @@ export class SaveManager {
      * Сбрасывает прогресс игрока до значений по умолчанию
      */
     public static resetProgress(): void {
-        this.saveProgress({ ...this.DEFAULT_PROGRESS });
+        // Сбросить массивы улучшений к дефолтным значениям
+        const defaultProgress = { ...this.DEFAULT_PROGRESS };
+        const shipDefaults = SpaceshipPanel.initializeUpgradesData();
+        defaultProgress.shipUpgrades = shipDefaults.map(upg => ({ ...upg }));
+        const miningDefaults = MiningPanel.initializeUpgradesData();
+        defaultProgress.miningUpgrades = miningDefaults.map(upg => ({ ...upg }));
+        this.saveProgress(defaultProgress);
+        // Также применить сброс в статических массивах панелей
+        SpaceshipPanel.setUpgradesArray(shipDefaults);
+        MiningPanel.setUpgradesArray(miningDefaults);
         console.log('Прогресс сброшен до значений по умолчанию');
     }    /**
      * Инкрементирует счетчик побед

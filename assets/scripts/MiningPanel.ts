@@ -20,7 +20,7 @@ export class MiningPanel extends Component {
     private static upgrades: UpgradeData[] = MiningPanel.initializeUpgradesData();
 
     // Статический метод для инициализации данных улучшений
-    private static initializeUpgradesData(): UpgradeData[] {
+    public static initializeUpgradesData(): UpgradeData[] {
         console.log("Initializing default upgrades data for MiningPanel.");
         return [
             {

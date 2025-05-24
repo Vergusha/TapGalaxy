@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, Button, BlockInputEvents } from 'cc';
+import { _decorator, Component, Node, Button, BlockInputEvents, find } from 'cc';
 import { SaveManager } from './SaveManager';
+import { TopPanel } from './TopPanel';
 const { ccclass, property } = _decorator;
 
 @ccclass('SettingsPanel')
@@ -29,6 +30,18 @@ export class SettingsPanel extends Component {
 
     onResetProgress() {
         SaveManager.resetProgress();
+        // Найти TopPanel и обновить значения на экране
+        const topPanelNode = find('Canvas/TopPanel');
+        if (topPanelNode) {
+            const topPanel = topPanelNode.getComponent(TopPanel);
+            if (topPanel) {
+                topPanel.setDilithium(0);
+                topPanel.setLunar(0);
+                topPanel.setPassiveDilithiumIncome(0);
+                topPanel.setPassiveLunarIncome(0);
+                if (topPanel.updateAllResourceDisplays) topPanel.updateAllResourceDisplays();
+            }
+        }
         this.closePanel();
     }
 }
