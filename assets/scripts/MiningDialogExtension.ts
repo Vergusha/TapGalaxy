@@ -11,32 +11,50 @@ const { ccclass, property } = _decorator;
  */
 @ccclass('MiningDialogExtension')
 export class MiningDialogExtension extends Component {
+    @property
+    public showMiningStartDialog: boolean = true;
 
-    @property({ type: Boolean, displayName: "Show Mining Start Dialog" })
-    showMiningStartDialog: boolean = true;
+    @property
+    public showMiningCompleteDialog: boolean = true;
 
-    @property({ type: Boolean, displayName: "Show Mining Complete Dialog" })
-    showMiningCompleteDialog: boolean = true;
+    @property
+    public showResourceDiscoveryDialog: boolean = true;
 
-    @property({ type: Boolean, displayName: "Show Resource Discovery Dialog" })
-    showResourceDiscoveryDialog: boolean = true;
+    private _miningInProgress: boolean = false;
+    private _currentResourceType: string = "";
+    private _expectedAmount: number = 0;
 
-    private miningInProgress: boolean = false;
-    private currentResourceType: string = "";
-    private expectedAmount: number = 0;
+    private static _instance: MiningDialogExtension = null;
+
+    public static getInstance(): MiningDialogExtension {
+        return this._instance;
+    }
+
+    public get miningInProgress(): boolean { return this._miningInProgress; }
+    public get currentResourceType(): string { return this._currentResourceType; }
+    public get expectedAmount(): number { return this._expectedAmount; }
+
+    onLoad() {
+        if (MiningDialogExtension._instance === null) {
+            MiningDialogExtension._instance = this;
+        } else {
+            this.destroy();
+            return;
+        }
+    }
 
     /**
      * Запустить процесс майнинга с диалогами
      */
     public startMiningWithDialog(resourceType: string, expectedAmount: number, onMiningComplete?: (actualAmount: number) => void) {
-        if (this.miningInProgress) {
+        if (this._miningInProgress) {
             this.showMiningBusyDialog();
             return;
         }
 
-        this.currentResourceType = resourceType;
-        this.expectedAmount = expectedAmount;
-        this.miningInProgress = true;
+        this._currentResourceType = resourceType;
+        this._expectedAmount = expectedAmount;
+        this._miningInProgress = true;
 
         if (this.showResourceDiscoveryDialog) {
             this.showResourceDiscovery(resourceType, () => {
@@ -114,10 +132,10 @@ export class MiningDialogExtension extends Component {
         // Симуляция процесса майнинга
         this.scheduleOnce(() => {
             const actualAmount = this.calculateMiningResult();
-            this.miningInProgress = false;
+            this._miningInProgress = false;
 
             if (this.showMiningCompleteDialog) {
-                this.showMiningComplete(this.currentResourceType, actualAmount, () => {
+                this.showMiningComplete(this._currentResourceType, actualAmount, () => {
                     onMiningComplete?.(actualAmount);
                 });
             } else {
@@ -130,7 +148,7 @@ export class MiningDialogExtension extends Component {
      * Показать диалог завершения майнинга
      */
     private showMiningComplete(resourceType: string, actualAmount: number, onComplete?: () => void) {
-        const efficiency = Math.round((actualAmount / this.expectedAmount) * 100);
+        const efficiency = Math.round((actualAmount / this._expectedAmount) * 100);
         
         let efficiencyComment = "";
         if (efficiency >= 120) {
@@ -185,7 +203,7 @@ export class MiningDialogExtension extends Component {
     private calculateMiningResult(): number {
         // Случайная эффективность от 70% до 130%
         const efficiency = 0.7 + Math.random() * 0.6;
-        return Math.floor(this.expectedAmount * efficiency);
+        return Math.floor(this._expectedAmount * efficiency);
     }
 
     /**
@@ -267,16 +285,16 @@ export class MiningDialogExtension extends Component {
      * Проверить, идет ли майнинг
      */
     public isMiningInProgress(): boolean {
-        return this.miningInProgress;
+        return this._miningInProgress;
     }
 
     /**
      * Экстренно остановить майнинг
      */
     public emergencyStopMining() {
-        if (this.miningInProgress) {
+        if (this._miningInProgress) {
             this.unscheduleAllCallbacks();
-            this.miningInProgress = false;
+            this._miningInProgress = false;
             
             const dialogs: DialogData[] = [
                 {

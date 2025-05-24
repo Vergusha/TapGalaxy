@@ -31,29 +31,29 @@ export interface DialogSystemSettings {
  */
 @ccclass('DialogSaveSystem')
 export class DialogSaveSystem extends Component {
-    
     private static readonly SAVE_KEY_PREFIX = 'dialog_save_';
     private static readonly SETTINGS_KEY = 'dialog_settings';
     private static readonly RELATIONS_KEY = 'character_relations';
 
-    private static instance: DialogSaveSystem = null;
-    private dialogHistory: Map<string, DialogSaveData> = new Map();
-    private characterRelations: Map<string, number> = new Map();
-    private settings: DialogSystemSettings;
+    private static _instance: DialogSaveSystem = null;
+    private _dialogHistory: Map<string, DialogSaveData> = new Map();
+    private _characterRelations: Map<string, number> = new Map();
+    private _settings: DialogSystemSettings;
+
+    public static getInstance(): DialogSaveSystem { return this._instance; }
+    public get dialogHistory(): Map<string, DialogSaveData> { return this._dialogHistory; }
+    public get characterRelations(): Map<string, number> { return this._characterRelations; }
+    public get settings(): DialogSystemSettings { return this._settings; }
 
     onLoad() {
-        if (DialogSaveSystem.instance === null) {
-            DialogSaveSystem.instance = this;
+        if (DialogSaveSystem._instance === null) {
+            DialogSaveSystem._instance = this;
             this.loadSettings();
             this.loadCharacterRelations();
         } else {
             this.destroy();
             return;
         }
-    }
-
-    public static getInstance(): DialogSaveSystem {
-        return DialogSaveSystem.instance;
     }
 
     /**
@@ -69,7 +69,7 @@ export class DialogSaveSystem extends Component {
             characterRelations: this.characterRelationsToObject()
         };
 
-        this.dialogHistory.set(dialogId, saveData);
+        this._dialogHistory.set(dialogId, saveData);
         
         // Сохранить в локальное хранилище
         const saveKey = DialogSaveSystem.SAVE_KEY_PREFIX + dialogId;
@@ -83,8 +83,8 @@ export class DialogSaveSystem extends Component {
      */
     public loadDialogState(dialogId: string): DialogSaveData | null {
         // Сначала проверить в памяти
-        if (this.dialogHistory.has(dialogId)) {
-            return this.dialogHistory.get(dialogId)!;
+        if (this._dialogHistory.has(dialogId)) {
+            return this._dialogHistory.get(dialogId)!;
         }
 
         // Загрузить из локального хранилища
@@ -94,12 +94,12 @@ export class DialogSaveSystem extends Component {
         if (savedData) {
             try {
                 const saveData: DialogSaveData = JSON.parse(savedData);
-                this.dialogHistory.set(dialogId, saveData);
+                this._dialogHistory.set(dialogId, saveData);
                 
                 // Восстановить отношения с персонажами
                 if (saveData.characterRelations) {
                     Object.entries(saveData.characterRelations).forEach(([character, relation]) => {
-                        this.characterRelations.set(character, relation);
+                        this._characterRelations.set(character, relation);
                     });
                 }
                 
@@ -133,7 +133,7 @@ export class DialogSaveSystem extends Component {
      * Удалить сохранение диалога
      */
     public deleteDialogSave(dialogId: string) {
-        this.dialogHistory.delete(dialogId);
+        this._dialogHistory.delete(dialogId);
         const saveKey = DialogSaveSystem.SAVE_KEY_PREFIX + dialogId;
         sys.localStorage.removeItem(saveKey);
     }
@@ -167,7 +167,7 @@ export class DialogSaveSystem extends Component {
      * Очистить все сохранения диалогов
      */
     public clearAllDialogSaves() {
-        this.dialogHistory.clear();
+        this._dialogHistory.clear();
         
         const keys = Object.keys(sys.localStorage);
         keys.forEach(key => {
@@ -181,7 +181,7 @@ export class DialogSaveSystem extends Component {
      * Сохранить настройки диалоговой системы
      */
     public saveSettings(settings: DialogSystemSettings) {
-        this.settings = { ...settings };
+        this._settings = { ...settings };
         sys.localStorage.setItem(DialogSaveSystem.SETTINGS_KEY, JSON.stringify(settings));
     }
 
@@ -193,23 +193,23 @@ export class DialogSaveSystem extends Component {
         
         if (savedSettings) {
             try {
-                this.settings = JSON.parse(savedSettings);
+                this._settings = JSON.parse(savedSettings);
             } catch (error) {
                 console.error('Error loading dialog settings:', error);
-                this.settings = this.getDefaultSettings();
+                this._settings = this.getDefaultSettings();
             }
         } else {
-            this.settings = this.getDefaultSettings();
+            this._settings = this.getDefaultSettings();
         }
 
-        return this.settings;
+        return this._settings;
     }
 
     /**
      * Получить текущие настройки
      */
     public getSettings(): DialogSystemSettings {
-        return this.settings || this.getDefaultSettings();
+        return this._settings || this.getDefaultSettings();
     }
 
     /**
@@ -230,10 +230,10 @@ export class DialogSaveSystem extends Component {
      * Обновить отношения с персонажем
      */
     public updateCharacterRelation(characterName: string, change: number) {
-        const currentRelation = this.characterRelations.get(characterName) || 0;
+        const currentRelation = this._characterRelations.get(characterName) || 0;
         const newRelation = Math.max(-100, Math.min(100, currentRelation + change));
         
-        this.characterRelations.set(characterName, newRelation);
+        this._characterRelations.set(characterName, newRelation);
         this.saveCharacterRelations();
 
         console.log(`Character relation updated: ${characterName} = ${newRelation} (${change >= 0 ? '+' : ''}${change})`);
@@ -243,14 +243,14 @@ export class DialogSaveSystem extends Component {
      * Получить отношения с персонажем
      */
     public getCharacterRelation(characterName: string): number {
-        return this.characterRelations.get(characterName) || 0;
+        return this._characterRelations.get(characterName) || 0;
     }
 
     /**
      * Получить все отношения с персонажами
      */
     public getAllCharacterRelations(): Map<string, number> {
-        return new Map(this.characterRelations);
+        return new Map(this._characterRelations);
     }
 
     /**
@@ -271,7 +271,7 @@ export class DialogSaveSystem extends Component {
             try {
                 const relationsObject = JSON.parse(savedRelations);
                 Object.entries(relationsObject).forEach(([character, relation]) => {
-                    this.characterRelations.set(character, relation as number);
+                    this._characterRelations.set(character, relation as number);
                 });
             } catch (error) {
                 console.error('Error loading character relations:', error);
@@ -284,7 +284,7 @@ export class DialogSaveSystem extends Component {
      */
     private characterRelationsToObject(): { [key: string]: number } {
         const obj: { [key: string]: number } = {};
-        this.characterRelations.forEach((value, key) => {
+        this._characterRelations.forEach((value, key) => {
             obj[key] = value;
         });
         return obj;
@@ -313,7 +313,7 @@ export class DialogSaveSystem extends Component {
             
             // Очистить текущие данные
             this.clearAllDialogSaves();
-            this.characterRelations.clear();
+            this._characterRelations.clear();
             
             // Восстановить диалоги
             if (backup.dialogs) {
@@ -335,7 +335,7 @@ export class DialogSaveSystem extends Component {
             // Восстановить отношения
             if (backup.characterRelations) {
                 Object.entries(backup.characterRelations).forEach(([character, relation]) => {
-                    this.characterRelations.set(character, relation as number);
+                    this._characterRelations.set(character, relation as number);
                 });
                 this.saveCharacterRelations();
             }
@@ -348,8 +348,8 @@ export class DialogSaveSystem extends Component {
     }
 
     onDestroy() {
-        if (DialogSaveSystem.instance === this) {
-            DialogSaveSystem.instance = null;
+        if (DialogSaveSystem._instance === this) {
+            DialogSaveSystem._instance = null;
         }
     }
 }

@@ -23,31 +23,30 @@ export interface LanguageData {
  */
 @ccclass('DialogLocalization')
 export class DialogLocalization extends Component {
-    
-    @property({ type: String })
-    defaultLanguage: string = 'ru';
+    @property({ displayName: "Default Language" })
+    public defaultLanguage: string = 'ru';
 
-    @property({ type: [String] })
-    supportedLanguages: string[] = ['ru', 'en'];
+    @property
+    public supportedLanguages: string[] = ['ru', 'en'];
 
-    private static instance: DialogLocalization = null;
-    private currentLanguage: string = '';
-    private languageData: Map<string, LanguageData> = new Map();
-    private loadingPromises: Map<string, Promise<LanguageData>> = new Map();
+    private static _instance: DialogLocalization = null;
+    private _currentLanguage: string = '';
+    private _languageData: Map<string, LanguageData> = new Map();
+    private _loadingPromises: Map<string, Promise<LanguageData>> = new Map();
+
+    public static getInstance(): DialogLocalization { return this._instance; }
+    public get currentLanguage(): string { return this._currentLanguage; }
+    public get languageData(): Map<string, LanguageData> { return this._languageData; }
 
     onLoad() {
-        if (DialogLocalization.instance === null) {
-            DialogLocalization.instance = this;
-            this.currentLanguage = this.defaultLanguage;
+        if (DialogLocalization._instance === null) {
+            DialogLocalization._instance = this;
+            this._currentLanguage = this.defaultLanguage;
             this.loadDefaultLanguages();
         } else {
             this.destroy();
             return;
         }
-    }
-
-    public static getInstance(): DialogLocalization {
-        return DialogLocalization.instance;
     }
 
     /**
@@ -64,25 +63,25 @@ export class DialogLocalization extends Component {
      */
     public async loadLanguage(languageCode: string): Promise<LanguageData> {
         // Проверить, не загружается ли уже этот язык
-        if (this.loadingPromises.has(languageCode)) {
-            return this.loadingPromises.get(languageCode)!;
+        if (this._loadingPromises.has(languageCode)) {
+            return this._loadingPromises.get(languageCode)!;
         }
 
         // Проверить, не загружен ли уже этот язык
-        if (this.languageData.has(languageCode)) {
-            return this.languageData.get(languageCode)!;
+        if (this._languageData.has(languageCode)) {
+            return this._languageData.get(languageCode)!;
         }
 
         const promise = this.loadLanguageFromResources(languageCode);
-        this.loadingPromises.set(languageCode, promise);
+        this._loadingPromises.set(languageCode, promise);
 
         try {
             const data = await promise;
-            this.languageData.set(languageCode, data);
-            this.loadingPromises.delete(languageCode);
+            this._languageData.set(languageCode, data);
+            this._loadingPromises.delete(languageCode);
             return data;
         } catch (error) {
-            this.loadingPromises.delete(languageCode);
+            this._loadingPromises.delete(languageCode);
             console.error(`Failed to load language ${languageCode}:`, error);
             
             // Возвращаем данные по умолчанию
@@ -247,7 +246,7 @@ export class DialogLocalization extends Component {
      */
     public async setLanguage(languageCode: string) {
         await this.loadLanguage(languageCode);
-        this.currentLanguage = languageCode;
+        this._currentLanguage = languageCode;
         console.log(`Language changed to: ${languageCode}`);
     }
 
@@ -255,18 +254,18 @@ export class DialogLocalization extends Component {
      * Получить текущий язык
      */
     public getCurrentLanguage(): string {
-        return this.currentLanguage;
+        return this._currentLanguage;
     }
 
     /**
      * Получить локализованную строку
      */
     public getString(key: string, params?: { [key: string]: string | number }): string {
-        const languageData = this.languageData.get(this.currentLanguage);
+        const languageData = this._languageData.get(this._currentLanguage);
         
         if (!languageData || !languageData.strings[key]) {
             // Попытаться найти в языке по умолчанию
-            const defaultData = this.languageData.get(this.defaultLanguage);
+            const defaultData = this._languageData.get(this.defaultLanguage);
             if (defaultData && defaultData.strings[key]) {
                 return this.formatString(defaultData.strings[key], params);
             }
@@ -276,19 +275,20 @@ export class DialogLocalization extends Component {
         }
 
         return this.formatString(languageData.strings[key], params);
-    }
-
-    /**
+    }    /**
      * Форматировать строку с параметрами
      */
     private formatString(template: string, params?: { [key: string]: string | number }): string {
         if (!params) return template;
 
         let result = template;
-        Object.entries(params).forEach(([key, value]) => {
-            const placeholder = `{${key}}`;
-            result = result.replace(new RegExp(placeholder, 'g'), value.toString());
-        });
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                const value = params[key];
+                const placeholder = `{${key}}`;
+                result = result.split(placeholder).join(value.toString());
+            }
+        }
 
         return result;
     }
@@ -317,7 +317,7 @@ export class DialogLocalization extends Component {
     public getAvailableLanguages(): { code: string, name: string }[] {
         const languages: { code: string, name: string }[] = [];
         
-        this.languageData.forEach((data, code) => {
+        this._languageData.forEach((data, code) => {
             languages.push({
                 code: data.code,
                 name: data.name
@@ -361,8 +361,8 @@ export class DialogLocalization extends Component {
     }
 
     onDestroy() {
-        if (DialogLocalization.instance === this) {
-            DialogLocalization.instance = null;
+        if (DialogLocalization._instance === this) {
+            DialogLocalization._instance = null;
         }
     }
 }

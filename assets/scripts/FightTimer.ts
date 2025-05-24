@@ -51,4 +51,10 @@ export class FightTimer extends Component {
         this.isReady = false;
         this.updateLabel();
     }
+
+    public skipTimer() {
+        this.isReady = true;
+        this.timeLeft = 0;
+        this.updateLabel();
+    }
 }

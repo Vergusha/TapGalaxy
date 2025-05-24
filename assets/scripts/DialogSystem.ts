@@ -17,31 +17,36 @@ export interface Character {
 @ccclass('DialogSystem')
 export class DialogSystem extends Component {
     @property({ type: [SpriteFrame] })
-    avatars: SpriteFrame[] = [];
+    public avatars: SpriteFrame[] = [];
 
     @property({ type: Node })
-    avatarNode: Node = null;
+    public avatarNode: Node = null;
 
     @property({ type: Node })
-    textLabel: Node = null;
+    public textLabel: Node = null;
 
-    @property({ type: Boolean, displayName: "Enable Appear Animation" })
-    enableAppearAnimation: boolean = true;
+    @property
+    public enableAppearAnimation: boolean = true;
 
-    @property({ type: Boolean, displayName: "Enable Typewriter Effect" })
-    enableTypewriter: boolean = false;
+    @property
+    public enableTypewriter: boolean = false;
 
-    @property({ type: Number, displayName: "Typewriter Speed (chars/sec)" })
-    typewriterSpeed: number = 30;
+    @property
+    public typewriterSpeed: number = 30;
 
-    @property({ type: Boolean, displayName: "Enable Sound Effects" })
-    enableSounds: boolean = false;
+    @property
+    public enableSounds: boolean = false;
 
-    private currentDialogIndex: number = 0;
-    private dialogs: DialogData[] = [];
-    private onDialogComplete: (() => void) | null = null;
-    private isTyping: boolean = false;
-    private typewriterInterval: any = null;
+    private _currentDialogIndex: number = 0;
+    private _dialogs: DialogData[] = [];
+    private _onDialogComplete: (() => void) | null = null;
+    private _isTyping: boolean = false;
+    private _typewriterInterval: any = null;
+
+    public get currentDialogIndex(): number { return this._currentDialogIndex; }
+    public get dialogs(): DialogData[] { return this._dialogs; }
+    public get isTyping(): boolean { return this._isTyping; }
+    public get onDialogComplete(): (() => void) | null { return this._onDialogComplete; }
 
     onLoad() {
         // Автоматически найти компоненты, если они не назначены
@@ -72,11 +77,11 @@ export class DialogSystem extends Component {
      * @param onComplete Callback при завершении диалогов
      */
     public initDialogs(dialogs: DialogData[], onComplete?: () => void) {
-        this.dialogs = dialogs;
-        this.currentDialogIndex = 0;
-        this.onDialogComplete = onComplete || null;
+        this._dialogs = dialogs;
+        this._currentDialogIndex = 0;
+        this._onDialogComplete = onComplete || null;
         
-        if (this.dialogs.length > 0) {
+        if (this._dialogs.length > 0) {
             this.showDialog(0);
         }
     }
@@ -85,12 +90,12 @@ export class DialogSystem extends Component {
      * Показать диалог по индексу
      */
     private showDialog(index: number) {
-        if (index >= this.dialogs.length) {
+        if (index >= this._dialogs.length) {
             this.completeDialog();
             return;
         }
 
-        const dialog = this.dialogs[index];
+        const dialog = this._dialogs[index];
         
         // Установить аватар
         this.setAvatar(dialog.avatarIndex);
@@ -153,22 +158,22 @@ export class DialogSystem extends Component {
         if (!label) return;
 
         // Остановить предыдущий эффект, если есть
-        if (this.typewriterInterval) {
-            clearInterval(this.typewriterInterval);
+        if (this._typewriterInterval) {
+            clearInterval(this._typewriterInterval);
         }
 
         label.string = '';
         let currentIndex = 0;
-        this.isTyping = true;
+        this._isTyping = true;
 
-        this.typewriterInterval = setInterval(() => {
+        this._typewriterInterval = setInterval(() => {
             if (currentIndex < text.length) {
                 label.string += text[currentIndex];
                 currentIndex++;
             } else {
-                clearInterval(this.typewriterInterval);
-                this.typewriterInterval = null;
-                this.isTyping = false;
+                clearInterval(this._typewriterInterval);
+                this._typewriterInterval = null;
+                this._isTyping = false;
             }
         }, 1000 / this.typewriterSpeed);
     }
@@ -178,23 +183,23 @@ export class DialogSystem extends Component {
      */
     public nextDialog() {
         // Если текст еще печатается, завершить его мгновенно
-        if (this.isTyping && this.typewriterInterval) {
-            clearInterval(this.typewriterInterval);
-            this.typewriterInterval = null;
-            this.isTyping = false;
+        if (this._isTyping && this._typewriterInterval) {
+            clearInterval(this._typewriterInterval);
+            this._typewriterInterval = null;
+            this._isTyping = false;
             
             // Показать полный текст
-            const dialog = this.dialogs[this.currentDialogIndex];
+            const dialog = this._dialogs[this._currentDialogIndex];
             if (dialog) {
                 this.setText(dialog.text);
             }
             return;
         }
 
-        this.currentDialogIndex++;
+        this._currentDialogIndex++;
         
-        if (this.currentDialogIndex < this.dialogs.length) {
-            this.showDialog(this.currentDialogIndex);
+        if (this._currentDialogIndex < this._dialogs.length) {
+            this.showDialog(this._currentDialogIndex);
         } else {
             this.completeDialog();
         }
@@ -236,8 +241,8 @@ export class DialogSystem extends Component {
     private completeDialog() {
         console.log('Dialog completed');
         
-        if (this.onDialogComplete) {
-            this.onDialogComplete();
+        if (this._onDialogComplete) {
+            this._onDialogComplete();
         }
 
         // Анимация закрытия или просто уничтожить узел
@@ -255,9 +260,9 @@ export class DialogSystem extends Component {
      */
     public closeDialog() {
         // Очистить интервал печатающего текста если активен
-        if (this.typewriterInterval) {
-            clearInterval(this.typewriterInterval);
-            this.typewriterInterval = null;
+        if (this._typewriterInterval) {
+            clearInterval(this._typewriterInterval);
+            this._typewriterInterval = null;
         }
         
         this.node.destroy();
@@ -267,21 +272,21 @@ export class DialogSystem extends Component {
      * Проверить, есть ли еще диалоги
      */
     public hasMoreDialogs(): boolean {
-        return this.currentDialogIndex < this.dialogs.length - 1;
+        return this._currentDialogIndex < this._dialogs.length - 1;
     }
 
     /**
      * Получить текущий индекс диалога
      */
     public getCurrentDialogIndex(): number {
-        return this.currentDialogIndex;
+        return this._currentDialogIndex;
     }
 
     /**
      * Получить общее количество диалогов
      */
     public getTotalDialogs(): number {
-        return this.dialogs.length;
+        return this._dialogs.length;
     }
 
     onDestroy() {
@@ -294,9 +299,9 @@ export class DialogSystem extends Component {
         }
 
         // Очистить интервал печатающего текста
-        if (this.typewriterInterval) {
-            clearInterval(this.typewriterInterval);
-            this.typewriterInterval = null;
+        if (this._typewriterInterval) {
+            clearInterval(this._typewriterInterval);
+            this._typewriterInterval = null;
         }
     }
 }

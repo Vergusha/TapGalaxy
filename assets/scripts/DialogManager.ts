@@ -9,23 +9,28 @@ const { ccclass, property } = _decorator;
 @ccclass('DialogManager')
 export class DialogManager extends Component {
     @property({ type: Prefab })
-    dialogBoxPrefab: Prefab = null;
+    public dialogBoxPrefab: Prefab = null;
 
-    @property({ type: Boolean, displayName: "Enable Auto Save" })
-    enableAutoSave: boolean = true;
+    @property
+    public enableAutoSave: boolean = true;
 
-    @property({ type: Boolean, displayName: "Enable Localization" })
-    enableLocalization: boolean = true;
+    @property
+    public enableLocalization: boolean = true;
 
-    private static instance: DialogManager = null;
-    private currentDialogInstance: Node = null;
-    private currentDialogId: string = '';
-    private dialogCounter: number = 0;
+    private static _instance: DialogManager = null;
+    private _currentDialogInstance: Node = null;
+    private _currentDialogId: string = '';
+    private _dialogCounter: number = 0;
+
+    public static getInstance(): DialogManager { return this._instance; }
+    public get currentDialogInstance(): Node { return this._currentDialogInstance; }
+    public get currentDialogId(): string { return this._currentDialogId; }
+    public get dialogCounter(): number { return this._dialogCounter; }
 
     onLoad() {
         // Singleton pattern
-        if (DialogManager.instance === null) {
-            DialogManager.instance = this;
+        if (DialogManager._instance === null) {
+            DialogManager._instance = this;
             this.initializeSubSystems();
         } else {
             this.destroy();
@@ -51,10 +56,6 @@ export class DialogManager extends Component {
         const integrationManager = this.node.getComponent(DialogIntegrationManager) || this.node.addComponent(DialogIntegrationManager);
     }
 
-    public static getInstance(): DialogManager {
-        return DialogManager.instance;
-    }
-
     /**
      * Показать диалог с расширенными возможностями
      * @param dialogs Массив диалогов для показа
@@ -70,10 +71,10 @@ export class DialogManager extends Component {
     ) {
         // Создать уникальный ID если не предоставлен
         if (!dialogId) {
-            dialogId = `dialog_${++this.dialogCounter}_${Date.now()}`;
+            dialogId = `dialog_${++this._dialogCounter}_${Date.now()}`;
         }
 
-        this.currentDialogId = dialogId;
+        this._currentDialogId = dialogId;
 
         // Локализовать диалоги если включена локализация
         let processedDialogs = dialogs;
@@ -98,8 +99,8 @@ export class DialogManager extends Component {
         }
 
         // Если уже есть активный диалог, закрыть его
-        if (this.currentDialogInstance && this.currentDialogInstance.isValid) {
-            this.currentDialogInstance.destroy();
+        if (this._currentDialogInstance && this._currentDialogInstance.isValid) {
+            this._currentDialogInstance.destroy();
         }
 
         if (!this.dialogBoxPrefab) {
@@ -115,14 +116,14 @@ export class DialogManager extends Component {
         }
 
         // Создать экземпляр диалога
-        this.currentDialogInstance = instantiate(this.dialogBoxPrefab);
-        canvas.addChild(this.currentDialogInstance);
+        this._currentDialogInstance = instantiate(this.dialogBoxPrefab);
+        canvas.addChild(this._currentDialogInstance);
 
         // Получить компонент DialogSystem
-        const dialogSystem = this.currentDialogInstance.getComponent(DialogSystem);
+        const dialogSystem = this._currentDialogInstance.getComponent(DialogSystem);
         if (!dialogSystem) {
             console.error('DialogManager: DialogSystem component not found on DialogBox prefab');
-            this.currentDialogInstance.destroy();
+            this._currentDialogInstance.destroy();
             return;
         }
 
@@ -136,8 +137,8 @@ export class DialogManager extends Component {
                 this.saveDialogCompletion(dialogId, processedDialogs.length);
             }
 
-            this.currentDialogInstance = null;
-            this.currentDialogId = '';
+            this._currentDialogInstance = null;
+            this._currentDialogId = '';
             
             if (onComplete) {
                 onComplete();
@@ -224,15 +225,15 @@ export class DialogManager extends Component {
      * Закрыть текущий диалог
      */
     public closeCurrentDialog() {
-        if (this.currentDialogInstance && this.currentDialogInstance.isValid) {
-            const dialogSystem = this.currentDialogInstance.getComponent(DialogSystem);
+        if (this._currentDialogInstance && this._currentDialogInstance.isValid) {
+            const dialogSystem = this._currentDialogInstance.getComponent(DialogSystem);
             if (dialogSystem) {
                 dialogSystem.closeDialog();
             } else {
-                this.currentDialogInstance.destroy();
+                this._currentDialogInstance.destroy();
             }
-            this.currentDialogInstance = null;
-            this.currentDialogId = '';
+            this._currentDialogInstance = null;
+            this._currentDialogId = '';
         }
     }
 
@@ -302,14 +303,14 @@ export class DialogManager extends Component {
      * Проверить, активен ли диалог
      */
     public isDialogActive(): boolean {
-        return this.currentDialogInstance !== null && this.currentDialogInstance.isValid;
+        return this._currentDialogInstance !== null && this._currentDialogInstance.isValid;
     }
 
     /**
      * Получить ID текущего диалога
      */
     public getCurrentDialogId(): string {
-        return this.currentDialogId;
+        return this._currentDialogId;
     }
 
     /**
@@ -358,8 +359,8 @@ export class DialogManager extends Component {
     }
 
     onDestroy() {
-        if (DialogManager.instance === this) {
-            DialogManager.instance = null;
+        if (DialogManager._instance === this) {
+            DialogManager._instance = null;
         }
     }
 }

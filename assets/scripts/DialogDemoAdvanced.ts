@@ -292,7 +292,6 @@ export class DialogDemoAdvanced extends Component {
     private showSaveSystemDemo() {
         const saveSystem = DialogSaveSystem.getInstance();
         if (saveSystem) {
-            // Показать диалог с сохранением прогресса
             const progressDialog: DialogData[] = [
                 {
                     speaker: "Система",
@@ -314,11 +313,10 @@ export class DialogDemoAdvanced extends Component {
             const dialogManager = DialogManager.getInstance();
             if (dialogManager) {
                 dialogManager.showDialog(progressDialog, () => {
-                    // Демонстрация изменения отношений
-                    saveSystem.updateCharacterRelationship('ai_ship', 10);
-                    saveSystem.updateCharacterRelationship('captain', 5);
+                    saveSystem.updateCharacterRelation('ai_ship', 10);
+                    saveSystem.updateCharacterRelation('captain', 5);
                     console.log('Dialog progress and relationships saved!');
-                }, true, 'save_demo');
+                }, 'save_demo');
             }
         }
     }
@@ -344,8 +342,8 @@ export class DialogDemoAdvanced extends Component {
     private showRelationshipDemo() {
         const saveSystem = DialogSaveSystem.getInstance();
         if (saveSystem) {
-            const aiRelationship = saveSystem.getCharacterRelationship('ai_ship');
-            const captainRelationship = saveSystem.getCharacterRelationship('captain');
+            const aiRelationship = saveSystem.getCharacterRelation('ai_ship');
+            const captainRelationship = saveSystem.getCharacterRelation('captain');
 
             const relationshipDialog: DialogData[] = [
                 {
@@ -368,9 +366,8 @@ export class DialogDemoAdvanced extends Component {
             const dialogManager = DialogManager.getInstance();
             if (dialogManager) {
                 dialogManager.showDialog(relationshipDialog, () => {
-                    // Улучшить отношения после диалога
-                    saveSystem.updateCharacterRelationship('ai_ship', 2);
-                    saveSystem.updateCharacterRelationship('captain', 1);
+                    saveSystem.updateCharacterRelation('ai_ship', 2);
+                    saveSystem.updateCharacterRelation('captain', 1);
                     console.log('Relationship dialog completed!');
                 });
             }
@@ -383,7 +380,7 @@ export class DialogDemoAdvanced extends Component {
     private showSettingsDemo() {
         const saveSystem = DialogSaveSystem.getInstance();
         if (saveSystem) {
-            const settings = saveSystem.getSettings();
+            const settings = saveSystem.settings;
             
             const settingsDialog: DialogData[] = [
                 {
@@ -411,8 +408,8 @@ export class DialogDemoAdvanced extends Component {
             const dialogManager = DialogManager.getInstance();
             if (dialogManager) {
                 dialogManager.showDialog(settingsDialog, () => {
-                    // Изменить настройки для демонстрации
-                    saveSystem.updateSettings({
+                    saveSystem.saveSettings({
+                        ...settings,
                         typewriterSpeed: settings.typewriterSpeed + 10
                     });
                     console.log('Settings demo completed!');
@@ -426,7 +423,7 @@ export class DialogDemoAdvanced extends Component {
      */
     private showComplexScenario() {
         const saveSystem = DialogSaveSystem.getInstance();
-        const aiRelationship = saveSystem?.getCharacterRelationship('ai_ship') || 0;
+        const aiRelationship = saveSystem?.getCharacterRelation('ai_ship') || 0;
         
         const complexDialog: DialogDataWithChoices[] = [
             {
@@ -441,7 +438,7 @@ export class DialogDemoAdvanced extends Component {
                 choices: [
                     {
                         text: "Уклониться маневром",
-                        condition: () => aiRelationship >= 20, // Доступно при хороших отношениях с ИИ
+                        condition: () => aiRelationship >= 20,
                         consequenceDialogs: [
                             {
                                 speaker: "ИИ Корабля",
@@ -477,13 +474,12 @@ export class DialogDemoAdvanced extends Component {
         const dialogManager = DialogManager.getInstance();
         if (dialogManager) {
             dialogManager.showDialog(complexDialog, () => {
-                // Сохранить результат сложного сценария
                 if (saveSystem) {
-                    saveSystem.updateCharacterRelationship('ai_ship', 3);
-                    saveSystem.updateGameProgress('asteroidEvent', true);
+                    saveSystem.updateCharacterRelation('ai_ship', 3);
+                    // TODO: Implement setGameProgress or similar if needed
                 }
                 console.log('Complex scenario completed with relationship and progress updates!');
-            }, true, 'complex_asteroid_scenario');
+            }, 'complex_asteroid_scenario');
         }
     }
 

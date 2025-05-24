@@ -25,18 +25,24 @@ export interface DialogDataWithChoices extends DialogData {
  */
 @ccclass('DialogChoiceSystem')
 export class DialogChoiceSystem extends Component {
-    
-    @property({ type: Prefab })
-    choiceButtonPrefab: Prefab = null;
+    @property
+    public choiceButtonPrefab: Prefab = null;
 
-    @property({ type: Node })
-    choiceContainer: Node = null;
+    @property
+    public choiceContainer: Node = null;
 
-    private currentChoices: DialogChoice[] = [];
-    private onChoiceSelected: ((choiceIndex: number) => void) | null = null;
+    private _currentChoices: DialogChoice[] = [];
+    private _onChoiceSelected: ((choiceIndex: number) => void) | null = null;
 
-    onLoad() {
-        // Автоматически найти контейнер для выборов, если не назначен
+    public get currentChoices(): DialogChoice[] {
+        return this._currentChoices;
+    }
+
+    public get isActive(): boolean {
+        return !!this.choiceContainer && this.choiceContainer.active;
+    }
+
+    protected onLoad() {
         if (!this.choiceContainer) {
             this.choiceContainer = this.node.getChildByName('ChoiceContainer');
         }
@@ -46,21 +52,15 @@ export class DialogChoiceSystem extends Component {
      * Показать выборы для текущего диалога
      */
     public showChoices(choices: DialogChoice[], onChoiceSelected: (choiceIndex: number) => void) {
-        this.currentChoices = choices;
-        this.onChoiceSelected = onChoiceSelected;
-
-        this.clearChoices();
-
+        this._currentChoices = choices;
+        this._onChoiceSelected = onChoiceSelected;
+        DialogChoiceSystem.clearContainer(this.choiceContainer);
         choices.forEach((choice, index) => {
-            // Проверить условие доступности выбора
             if (choice.condition && !choice.condition()) {
-                return; // Пропустить недоступный выбор
+                return;
             }
-
             this.createChoiceButton(choice, index);
         });
-
-        // Показать контейнер с выборами
         if (this.choiceContainer) {
             this.choiceContainer.active = true;
         }
@@ -70,7 +70,7 @@ export class DialogChoiceSystem extends Component {
      * Скрыть выборы
      */
     public hideChoices() {
-        this.clearChoices();
+        DialogChoiceSystem.clearContainer(this.choiceContainer);
         if (this.choiceContainer) {
             this.choiceContainer.active = false;
         }
@@ -84,17 +84,12 @@ export class DialogChoiceSystem extends Component {
             console.error('DialogChoiceSystem: Choice button prefab or container not set');
             return;
         }
-
         const buttonNode = instantiate(this.choiceButtonPrefab);
         this.choiceContainer.addChild(buttonNode);
-
-        // Установить текст
         const label = buttonNode.getComponentInChildren(Label);
         if (label) {
             label.string = choice.text;
         }
-
-        // Настроить обработчик клика
         const button = buttonNode.getComponent(Button);
         if (button) {
             button.node.on(Button.EventType.CLICK, () => {
@@ -107,93 +102,26 @@ export class DialogChoiceSystem extends Component {
      * Выбрать опцию
      */
     private selectChoice(choiceIndex: number) {
-        const choice = this.currentChoices[choiceIndex];
+        const choice = this._currentChoices[choiceIndex];
         if (!choice) return;
-
-        // Скрыть выборы
         this.hideChoices();
-
-        // Выполнить действие выбора
         if (choice.action) {
             choice.action();
         }
-
-        // Показать последующие диалоги
         if (choice.consequenceDialogs && choice.consequenceDialogs.length > 0) {
             DialogManager.getInstance()?.showDialog(choice.consequenceDialogs);
         }
-
-        // Уведомить о выборе
-        if (this.onChoiceSelected) {
-            this.onChoiceSelected(choiceIndex);
+        if (this._onChoiceSelected) {
+            this._onChoiceSelected(choiceIndex);
         }
     }
 
     /**
-     * Очистить все кнопки выборов
+     * Очистить все кнопки выборов (утилита)
      */
-    private clearChoices() {
-        if (!this.choiceContainer) return;
-
-        this.choiceContainer.children.forEach(child => {
-            child.destroy();
-        });
-    }
-}
-
-/**
- * Расширенная версия DialogSystem с поддержкой выборов
- */
-@ccclass('DialogSystemWithChoices')
-export class DialogSystemWithChoices extends DialogSystem {
-    
-    @property({ type: DialogChoiceSystem })
-    choiceSystem: DialogChoiceSystem = null;
-
-    private currentDialogData: DialogDataWithChoices[] = [];
-
-    onLoad() {
-        super.onLoad();
-        
-        // Автоматически найти систему выборов
-        if (!this.choiceSystem) {
-            this.choiceSystem = this.getComponent(DialogChoiceSystem);
-        }
-    }
-
-    /**
-     * Инициализировать диалоги с поддержкой выборов
-     */
-    public initDialogsWithChoices(dialogs: DialogDataWithChoices[], onComplete?: () => void) {
-        this.currentDialogData = dialogs;
-        super.initDialogs(dialogs, onComplete);
-    }
-
-    /**
-     * Переопределенный метод показа диалога для поддержки выборов
-     */
-    protected showDialog(index: number) {
-        super.showDialog(index);
-
-        const dialog = this.currentDialogData[index];
-        if (dialog && dialog.choices && dialog.choices.length > 0) {
-            // Показать выборы для этого диалога
-            this.choiceSystem?.showChoices(dialog.choices, (choiceIndex) => {
-                // После выбора продолжить с обычными диалогами
-                this.nextDialog();
-            });
-        } else {
-            // Скрыть выборы, если их нет
-            this.choiceSystem?.hideChoices();
-        }
-    }
-
-    /**
-     * Переопределенный метод завершения диалога
-     */
-    protected completeDialog() {
-        this.choiceSystem?.hideChoices();
-        super.completeDialog();
+    public static clearContainer(container: Node) {
+        if (!container) return;
+        container.children.forEach(child => child.destroy());
     }
 }
 

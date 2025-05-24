@@ -11,15 +11,29 @@ const { ccclass, property } = _decorator;
  */
 @ccclass('SpaceshipDialogExtension')
 export class SpaceshipDialogExtension extends Component {
+    private static _instance: SpaceshipDialogExtension = null;
 
-    @property({ type: Boolean, displayName: "Show Upgrade Dialogs" })
-    showUpgradeDialogs: boolean = true;
+    public static getInstance(): SpaceshipDialogExtension {
+        return this._instance;
+    }
 
-    @property({ type: Boolean, displayName: "Show Repair Dialogs" })
-    showRepairDialogs: boolean = true;
+    onLoad() {
+        if (SpaceshipDialogExtension._instance === null) {
+            SpaceshipDialogExtension._instance = this;
+        } else {
+            this.destroy();
+            return;
+        }
+    }
 
-    @property({ type: Boolean, displayName: "Show System Status Dialogs" })
-    showSystemStatusDialogs: boolean = true;
+    @property
+    public showUpgradeDialogs: boolean = true;
+
+    @property
+    public showRepairDialogs: boolean = true;
+
+    @property
+    public showSystemStatusDialogs: boolean = true;
 
     /**
      * Показать диалог улучшения корабля
