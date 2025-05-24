@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, Vec3, tween, Quat, easing, find } from 'cc';
+import { _decorator, Component, Node, director, Vec3, tween, Quat, easing, find, Label } from 'cc';
 import { ShipStats } from './ShipStats';
 import { SpaceshipPanel } from './SpaceshipPanel';
 import { SaveManager } from './SaveManager';
@@ -6,6 +6,20 @@ const { ccclass, property } = _decorator;
 
 @ccclass('CombatManager')
 export class CombatManager extends Component {
+    // Массив имен врагов
+    private readonly enemyNames: string[] = [
+        "Zarvok Starshifter",
+        "Krex Ironwing",
+        "V'Larax of Nebulon",
+        "Gorrik Starclaw",
+        "T'zarn the Sky Raider",
+        "Nexari Flamevein",
+        "Skarn Driftfang", 
+        "Ixel the Far Wanderer",
+        "Drel'Quon Pulseblade",
+        "Morkael the Cosmic Rover"
+    ];
+
     @property(Node)
     enemyShip: Node = null;
 
@@ -31,6 +45,9 @@ export class CombatManager extends Component {
     start() {
         // Позиционируем корабли и HUD
         this.setupPositions();
+
+        // Устанавливаем имена для героя и врага
+        this.setShipNames();
 
         // Initialize ships with base stats + upgrades from SpaceshipPanel
         const upgrades = this.getUpgrades();
@@ -325,6 +342,40 @@ export class CombatManager extends Component {
                     scale: new Vec3(1, 1, 1)
                 })
                 .start();
+        }
+    }
+
+    /**
+     * Устанавливает имена для кораблей героя и врага
+     */
+    private setShipNames() {
+        // Имя героя - всегда "You"
+        if (this.heroShip) {
+            const heroName = "You";
+            this.heroShip.name = heroName;
+            
+            // Также обновляем HUD героя, если он существует
+            if (this.heroHUD) {
+                const heroLabel = this.heroHUD.getComponentInChildren(Label);
+                if (heroLabel) {
+                    heroLabel.string = heroName;
+                }
+            }
+        }
+
+        // Имя врага - случайное из списка
+        if (this.enemyShip) {
+            const randomIndex = Math.floor(Math.random() * this.enemyNames.length);
+            const enemyName = this.enemyNames[randomIndex];
+            this.enemyShip.name = enemyName;
+            
+            // Обновляем HUD врага, если он существует
+            if (this.enemyHUD) {
+                const enemyLabel = this.enemyHUD.getComponentInChildren(Label);
+                if (enemyLabel) {
+                    enemyLabel.string = enemyName;
+                }
+            }
         }
     }
 
