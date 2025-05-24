@@ -190,4 +190,20 @@ export class SpaceshipPanel extends Component {
             }
         });
     }
+
+    // Возвращает глубокую копию массива улучшений для сохранения
+    public static getUpgradesArray(): SpaceshipUpgradeData[] {
+        return SpaceshipPanel.upgrades.map(upg => ({ ...upg }));
+    }
+
+    // Устанавливает массив улучшений из сохранения (или сбрасывает к дефолту при ошибке)
+    public static setUpgradesArray(arr: SpaceshipUpgradeData[]) {
+        if (Array.isArray(arr) && arr.length === SpaceshipPanel.upgrades.length) {
+            for (let i = 0; i < arr.length; i++) {
+                SpaceshipPanel.upgrades[i] = { ...arr[i] };
+            }
+        } else {
+            SpaceshipPanel.upgrades = SpaceshipPanel.initializeUpgradesData();
+        }
+    }
 }

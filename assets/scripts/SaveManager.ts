@@ -1,6 +1,8 @@
 import { _decorator, sys, find } from 'cc';
 import { TopPanel } from './TopPanel';
-import { SpaceshipPanel } from './SpaceshipPanel';
+import { SpaceshipPanel, SpaceshipUpgradeData } from './SpaceshipPanel';
+import { MiningPanel } from './MiningPanel';
+import { UpgradeData } from './MiningUpdate';
 const { ccclass, property } = _decorator;
 
 // Интерфейс для хранения данных игрока
@@ -13,18 +15,11 @@ export interface PlayerProgress {
     passiveDilithiumIncome: number;
     passiveLunarIncome: number;
     
-    // Улучшения корабля
-    shipUpgrades: {
-        hpBonus: number;
-        shieldBonus: number;
-        damageBonus: number;
-    };
+    // Улучшения корабля (теперь массив)
+    shipUpgrades: SpaceshipUpgradeData[];
     
-    // Улучшения добычи
-    miningUpgrades: {
-        speed: number;
-        efficiency: number;
-    };
+    // Улучшения добычи (теперь массив)
+    miningUpgrades: UpgradeData[];
     
     // Статистика боев
     combatStats: {
@@ -46,15 +41,8 @@ export class SaveManager {
         dilithium: 0,
         passiveDilithiumIncome: 0,
         passiveLunarIncome: 0,
-        shipUpgrades: {
-            hpBonus: 0,
-            shieldBonus: 0,
-            damageBonus: 0
-        },
-        miningUpgrades: {
-            speed: 0,
-            efficiency: 0
-        },
+        shipUpgrades: [], // Will be set in getCurrentGameState
+        miningUpgrades: [], // Will be set in getCurrentGameState
         combatStats: {
             wins: 0,
             losses: 0
@@ -86,7 +74,6 @@ export class SaveManager {
      * Собирает текущее состояние игры из компонентов
      */    private static getCurrentGameState(): PlayerProgress {
         const progress = { ...this.DEFAULT_PROGRESS };
-        
         // Ищем TopPanel для получения текущих ресурсов
         const topPanelNode = find('Canvas/TopPanel');
         if (topPanelNode) {
@@ -98,13 +85,9 @@ export class SaveManager {
                 progress.passiveLunarIncome = topPanel.getPassiveLunarIncome();
             }
         }
-        
-        // Получаем текущие улучшения корабля
-        const shipUpgrades = SpaceshipPanel.getUpgradeValues();
-        progress.shipUpgrades = shipUpgrades;
-        
-        // Здесь можно добавить сбор данных из других компонентов
-        
+        // Получаем текущие массивы улучшений
+        progress.shipUpgrades = SpaceshipPanel.getUpgradesArray();
+        progress.miningUpgrades = MiningPanel.getUpgradesArray();
         return progress;
     }
     
@@ -115,14 +98,20 @@ export class SaveManager {
     public static loadProgress(): PlayerProgress {
         try {
             const jsonData = sys.localStorage.getItem(this.SAVE_KEY);
-            
             if (jsonData) {
-                return JSON.parse(jsonData) as PlayerProgress;
+                const loaded = JSON.parse(jsonData) as PlayerProgress;
+                // Backward compatibility: if upgrades are not arrays, reset to default
+                if (!Array.isArray(loaded.shipUpgrades)) {
+                    loaded.shipUpgrades = SpaceshipPanel.getUpgradesArray();
+                }
+                if (!Array.isArray(loaded.miningUpgrades)) {
+                    loaded.miningUpgrades = MiningPanel.getUpgradesArray();
+                }
+                return loaded;
             }
         } catch (error) {
             console.error('Ошибка при загрузке прогресса:', error);
         }
-        
         // Возвращаем данные по умолчанию, если не удалось загрузить сохранение
         return { ...this.DEFAULT_PROGRESS };
     }

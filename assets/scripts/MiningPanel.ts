@@ -59,6 +59,22 @@ export class MiningPanel extends Component {
         // После сброса нужно будет обновить UI, если панель открыта
     }
 
+    // Возвращает глубокую копию массива улучшений для сохранения
+    public static getUpgradesArray(): UpgradeData[] {
+        return MiningPanel.upgrades.map(upg => ({ ...upg }));
+    }
+
+    // Устанавливает массив улучшений из сохранения (или сбрасывает к дефолту при ошибке)
+    public static setUpgradesArray(arr: UpgradeData[]) {
+        if (Array.isArray(arr) && arr.length === MiningPanel.upgrades.length) {
+            for (let i = 0; i < arr.length; i++) {
+                MiningPanel.upgrades[i] = { ...arr[i] };
+            }
+        } else {
+            MiningPanel.upgrades = MiningPanel.initializeUpgradesData();
+        }
+    }
+
     setTopPanel(topPanel: TopPanel) {
         this.topPanelComponent = topPanel;
         this.spawnUpgrades();
