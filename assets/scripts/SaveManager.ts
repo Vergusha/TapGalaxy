@@ -10,6 +10,8 @@ export interface PlayerProgress {
     // Ресурсы игрока
     lunar: number;
     dilithium: number;
+    xenoBit: number; // Новая валюта за бой
+    quark: number;   // Донат-валюта
     
     // Пассивный доход
     passiveDilithiumIncome: number;
@@ -39,6 +41,8 @@ export class SaveManager {
     private static readonly DEFAULT_PROGRESS: PlayerProgress = {
         lunar: 0,
         dilithium: 0,
+        xenoBit: 0,
+        quark: 0,
         passiveDilithiumIncome: 0,
         passiveLunarIncome: 0,
         shipUpgrades: [], // Will be set in getCurrentGameState
@@ -83,6 +87,8 @@ export class SaveManager {
                 progress.dilithium = topPanel.getDilithium();
                 progress.passiveDilithiumIncome = topPanel.getPassiveDilithiumIncome();
                 progress.passiveLunarIncome = topPanel.getPassiveLunarIncome();
+                if (typeof topPanel.getXenoBit === 'function') progress.xenoBit = topPanel.getXenoBit();
+                if (typeof topPanel.getQuark === 'function') progress.quark = topPanel.getQuark();
             }
         }
         // Получаем текущие массивы улучшений
@@ -107,6 +113,8 @@ export class SaveManager {
                 if (!Array.isArray(loaded.miningUpgrades)) {
                     loaded.miningUpgrades = MiningPanel.getUpgradesArray();
                 }
+                if (typeof loaded.xenoBit !== 'number') loaded.xenoBit = 0;
+                if (typeof loaded.quark !== 'number') loaded.quark = 0;
                 return loaded;
             }
         } catch (error) {
@@ -159,6 +167,8 @@ export class SaveManager {
         defaultProgress.shipUpgrades = shipDefaults.map(upg => ({ ...upg }));
         const miningDefaults = MiningPanel.initializeUpgradesData();
         defaultProgress.miningUpgrades = miningDefaults.map(upg => ({ ...upg }));
+        defaultProgress.xenoBit = 0;
+        defaultProgress.quark = 0;
         this.saveProgress(defaultProgress);
         // Также применить сброс в статических массивах панелей
         SpaceshipPanel.setUpgradesArray(shipDefaults);
@@ -188,15 +198,17 @@ export class SaveManager {
       /**
      * Добавляет ресурсы игроку
      */
-    public static addResources(lunar: number = 0, dilithium: number = 0): void {
+    public static addResources(lunar: number = 0, dilithium: number = 0, xenoBit: number = 0, quark: number = 0): void {
         const progress = this.loadProgress();
         
-        console.log('Добавление ресурсов - было:', progress.lunar, 'лунаров,', progress.dilithium, 'дилития');
+        console.log('Добавление ресурсов - было:', progress.lunar, 'лунаров,', progress.dilithium, 'дилития,', progress.xenoBit, 'xenoBit,', progress.quark, 'quark');
         
         progress.lunar += lunar;
         progress.dilithium += dilithium;
+        progress.xenoBit += xenoBit;
+        progress.quark += quark;
         
-        console.log('Добавление ресурсов - стало:', progress.lunar, 'лунаров,', progress.dilithium, 'дилития');
+        console.log('Добавление ресурсов - стало:', progress.lunar, 'лунаров,', progress.dilithium, 'дилития,', progress.xenoBit, 'xenoBit,', progress.quark, 'quark');
         
         this.saveProgress(progress);
     }
@@ -206,5 +218,24 @@ export class SaveManager {
      */
     public static hasSavedGame(): boolean {
         return !!sys.localStorage.getItem(this.SAVE_KEY);
+    }
+    /**
+     * Принудительно обновляет все ресурсы в TopPanel из SaveManager (например, после боя)
+     */
+    public static forceUpdateTopPanelResources() {
+        const topPanelNode = find('Canvas/TopPanel');
+        if (topPanelNode) {
+            const topPanel = topPanelNode.getComponent(TopPanel);
+            if (topPanel) {
+                const progress = this.loadProgress();
+                topPanel.setDilithium(progress.dilithium || 0);
+                topPanel.setLunar(progress.lunar || 0);
+                topPanel.setPassiveDilithiumIncome(progress.passiveDilithiumIncome || 0);
+                topPanel.setPassiveLunarIncome(progress.passiveLunarIncome || 0);
+                if (typeof topPanel.setXenoBit === 'function') topPanel.setXenoBit(progress.xenoBit || 0);
+                if (typeof topPanel.setQuark === 'function') topPanel.setQuark(progress.quark || 0);
+                if (topPanel.updateAllResourceDisplays) topPanel.updateAllResourceDisplays();
+            }
+        }
     }
 }

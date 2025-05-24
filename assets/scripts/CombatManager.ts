@@ -123,8 +123,11 @@ export class CombatManager extends Component {
             // Сохраняем победу
             SaveManager.addWin();
             
-            // Добавляем награду за победу - напрямую к текущим сохраненным значениям
-            SaveManager.addResources(50, 10); // Награда: 50 лунаров и 10 дилития
+            // Добавляем награду за победу - XenoBit (от 50 до 100)
+            const xenoBitReward = Math.floor(50 + Math.random() * 51); // 50-100 включительно
+            SaveManager.addResources(0, 0, xenoBitReward, 0);
+            // Принудительно обновляем TopPanel, чтобы XenoBit сразу отобразился
+            SaveManager.forceUpdateTopPanelResources();
             
             // Return to main scene
             director.loadScene('Main', (err) => {

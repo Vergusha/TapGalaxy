@@ -10,6 +10,11 @@ export class TopPanel extends Component {
     @property({ type: Label })
     lunarLabel: Label = null;
 
+    @property({ type: Label })
+    xenoBitLabel: Label = null;
+    @property({ type: Label })
+    quarkLabel: Label = null;
+
     private dilithium: number = 0;
     private lunar: number = 0;
     private passiveDilithiumIncome: number = 0;
@@ -18,6 +23,9 @@ export class TopPanel extends Component {
     private autoSaveInterval: number = 10; // Автосохранение каждые 10 секунд после изменений
     private needsAutoSave: boolean = false; // Флаг, указывающий на необходимость автосохранения
 
+    private xenoBit: number = 0;
+    private quark: number = 0;
+
     // Геттеры для получения значений ресурсов
     getDilithium(): number {
         return this.dilithium;
@@ -25,7 +33,8 @@ export class TopPanel extends Component {
 
     getLunar(): number {
         return this.lunar;
-    }    // Геттеры для получения значений пассивного дохода
+    }
+    // Геттеры для получения значений пассивного дохода
     getPassiveDilithiumIncome(): number {
         return this.passiveDilithiumIncome;
     }
@@ -33,7 +42,32 @@ export class TopPanel extends Component {
     getPassiveLunarIncome(): number {
         return this.passiveLunarIncome;
     }
-
+    // Геттеры для новых валют
+    getXenoBit(): number {
+        return this.xenoBit;
+    }
+    getQuark(): number {
+        return this.quark;
+    }
+    // Сеттеры для новых валют
+    setXenoBit(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка установить неверное количество XenoBit:", amount);
+            return;
+        }
+        this.xenoBit = amount;
+        this.updateXenoBitLabel();
+        console.log('Установлено значение XenoBit:', amount);
+    }
+    setQuark(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка установить неверное количество Quark:", amount);
+            return;
+        }
+        this.quark = amount;
+        this.updateQuarkLabel();
+        console.log('Установлено значение Quark:', amount);
+    }
     // Методы для добавления ресурсов
     addDilithium(amount: number) {
         if (amount === undefined || isNaN(amount)) {
@@ -53,7 +87,26 @@ export class TopPanel extends Component {
         this.lunar += amount;
         this.updateLunarLabel();
         this.needsAutoSave = true; // Помечаем для автосохранения
-    }    // Методы для списания ресурсов
+    }
+    addXenoBit(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка добавить неверное количество XenoBit:", amount);
+            return;
+        }
+        this.xenoBit += amount;
+        this.updateXenoBitLabel();
+        this.needsAutoSave = true;
+    }
+    addQuark(amount: number) {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка добавить неверное количество Quark:", amount);
+            return;
+        }
+        this.quark += amount;
+        this.updateQuarkLabel();
+        this.needsAutoSave = true;
+    }
+    // Методы для списания ресурсов
     spendDilithium(amount: number): boolean {
         if (amount === undefined || isNaN(amount)) {
             console.error("TopPanel: Попытка списать неверное количество дилития:", amount);
@@ -81,7 +134,32 @@ export class TopPanel extends Component {
         }
         return false;
     }
-
+    spendXenoBit(amount: number): boolean {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка списать неверное количество XenoBit:", amount);
+            return false;
+        }
+        if (this.xenoBit >= amount) {
+            this.xenoBit -= amount;
+            this.updateXenoBitLabel();
+            this.needsAutoSave = true;
+            return true;
+        }
+        return false;
+    }
+    spendQuark(amount: number): boolean {
+        if (amount === undefined || isNaN(amount)) {
+            console.error("TopPanel: Попытка списать неверное количество Quark:", amount);
+            return false;
+        }
+        if (this.quark >= amount) {
+            this.quark -= amount;
+            this.updateQuarkLabel();
+            this.needsAutoSave = true;
+            return true;
+        }
+        return false;
+    }
     // Методы для пассивного дохода
     addPassiveDilithiumIncome(amount: number) {
         if (amount === undefined || isNaN(amount)) {
@@ -111,10 +189,22 @@ export class TopPanel extends Component {
             this.lunarLabel.string = `${Math.floor(this.lunar)}`;
         }
     }
+    updateXenoBitLabel() {
+        if (this.xenoBitLabel) {
+            this.xenoBitLabel.string = `${Math.floor(this.xenoBit)}`;
+        }
+    }
+    updateQuarkLabel() {
+        if (this.quarkLabel) {
+            this.quarkLabel.string = `${Math.floor(this.quark)}`;
+        }
+    }
 
     updateAllResourceDisplays() {
         this.updateDilithiumLabel();
         this.updateLunarLabel();
+        this.updateXenoBitLabel();
+        this.updateQuarkLabel();
     }
 
     // Метод для клика по планете

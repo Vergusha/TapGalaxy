@@ -39,6 +39,8 @@ export class SettingsPanel extends Component {
                 topPanel.setLunar(0);
                 topPanel.setPassiveDilithiumIncome(0);
                 topPanel.setPassiveLunarIncome(0);
+                if (typeof topPanel.setXenoBit === 'function') topPanel.setXenoBit(0);
+                if (typeof topPanel.setQuark === 'function') topPanel.setQuark(0);
                 if (topPanel.updateAllResourceDisplays) topPanel.updateAllResourceDisplays();
             }
         }

@@ -72,7 +72,11 @@ export class OpenGamePanel extends Component {
                 // Устанавливаем значения пассивного дохода
                 topPanelComponent.setPassiveDilithiumIncome(progress.passiveDilithiumIncome || 0);
                 topPanelComponent.setPassiveLunarIncome(progress.passiveLunarIncome || 0);
-                console.log('Ресурсы успешно загружены из сохранения:', progress.dilithium, 'дилития,', progress.lunar, 'лунаров');
+                // Устанавливаем новые валюты
+                if (typeof topPanelComponent.setXenoBit === 'function') topPanelComponent.setXenoBit(progress.xenoBit || 0);
+                if (typeof topPanelComponent.setQuark === 'function') topPanelComponent.setQuark(progress.quark || 0);
+                if (topPanelComponent.updateAllResourceDisplays) topPanelComponent.updateAllResourceDisplays();
+                console.log('Ресурсы успешно загружены из сохранения:', progress.dilithium, 'дилития,', progress.lunar, 'лунаров,', progress.xenoBit, 'XenoBit,', progress.quark, 'quark');
                 console.log('Пассивный доход загружен:', progress.passiveDilithiumIncome, 'дилития/сек,', progress.passiveLunarIncome, 'лунаров/сек');
             }
             // Загружаем улучшения корабля
