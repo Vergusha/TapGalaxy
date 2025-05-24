@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, director, Vec3, tween, Quat, easing } from 'cc';
+import { _decorator, Component, Node, director, Vec3, tween, Quat, easing, find } from 'cc';
 import { ShipStats } from './ShipStats';
 import { SpaceshipPanel } from './SpaceshipPanel';
 import { SaveManager } from './SaveManager';
@@ -126,8 +126,16 @@ export class CombatManager extends Component {
             // Добавляем награду за победу - XenoBit (от 50 до 100)
             const xenoBitReward = Math.floor(50 + Math.random() * 51); // 50-100 включительно
             SaveManager.addResources(0, 0, xenoBitReward, 0);
-            // Принудительно обновляем TopPanel, чтобы XenoBit сразу отобразился
-            SaveManager.forceUpdateTopPanelResources();
+
+            // Универсальное обновление TopPanel без передачи ссылки
+            const topPanelNode = find('Canvas/TopPanel');
+            if (topPanelNode) {
+                // Явно указываем тип TopPanel
+                const topPanel = topPanelNode.getComponent('TopPanel') as any;
+                if (topPanel && typeof topPanel.updateAllResourceDisplays === 'function') {
+                    topPanel.updateAllResourceDisplays();
+                }
+            }
             
             // Return to main scene
             director.loadScene('Main', (err) => {

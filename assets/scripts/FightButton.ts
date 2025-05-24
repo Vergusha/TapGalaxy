@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Button, director, Prefab, instantiate } from 'cc';
 import { SaveManager } from './SaveManager';
+import { FightTimer } from './FightTimer';
 const { ccclass, property } = _decorator;
 
 @ccclass('FightButton')
@@ -17,16 +18,29 @@ export class FightButton extends Component {
     heroShipPrefab: Prefab = null;
 
     private button: Button = null;
+    private fightTimer: FightTimer = null;
 
     start() {
         // Get button component
         this.button = this.getComponent(Button);
-        
+        // Найти FightTimer на том же FightNode
+        const fightNode = this.node.parent;
+        if (fightNode) {
+            const labelNode = fightNode.getChildByName('Label');
+            if (labelNode) {
+                this.fightTimer = labelNode.getComponent(FightTimer);
+            }
+        }
         // Add click event listener
         if (this.button) {
             this.button.node.on('click', this.onFightButtonClick, this);
         }
     }    private onFightButtonClick() {
+        // Проверяем, готов ли бой
+        if (!this.fightTimer || !this.fightTimer.canFight()) {
+            console.log('Бой недоступен: таймер не готов');
+            return;
+        }
         // Сохраняем текущее состояние перед боем
         SaveManager.saveProgress();
         
@@ -38,6 +52,10 @@ export class FightButton extends Component {
             }
             console.log('Successfully loaded Fight scene');
             this.initializeFightScene();
+            // Сбросить таймер после боя
+            if (this.fightTimer) {
+                this.fightTimer.resetTimer();
+            }
         });
     }
 
